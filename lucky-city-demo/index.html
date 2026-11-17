@@ -200,7 +200,20 @@ function render(){var app=document.getElementById('app');if(!app)return;var h='<
  h+='<footer>ПРЕДПРОСМОТР · без сервера, платежей и реальных призов</footer><div class="nav">'+[['city','🏙️','Город'],['quests','🎁','Награды'],['rating','🏆','Рейтинг'],['clubs','🏰','Клубы'],['profile','👤','Профиль']].map(function(x){return button('<span>'+x[1]+'</span><small>'+x[2]+'</small>','nav',x[0],screen===x[0]?'active':'')}).join('')+'</div>';
  if(toast)h+='<div class="toast">'+escapeText(toast)+'</div>';app.innerHTML=h}
 document.addEventListener('click',function(e){var b=e.target.closest('button[data-action]');if(b&&!b.disabled)act(b.dataset.action,b.dataset.value)});
-setInterval(function(){if(state.crash){if(settle())render();else{var el=document.getElementById('crashnum');if(el)el.textContent='×'+crashMult().toFixed(2)}}},180);
+function animateCrashGraph(){
+ if(!state.crash)return;
+ var mult=crashMult(),elapsed=Math.max(0,Date.now()-state.crash.start),fraction=Math.min(1,elapsed/12000),lastX=5+fraction*285,lastY=Math.max(9,190-Math.pow(fraction,.85)*176);
+ var pts=[];for(var i=0;i<=18;i++){var k=i/18,x=5+(lastX-5)*k,y=190-(190-lastY)*Math.pow(k,1.55);pts.push([x.toFixed(1),y.toFixed(1)])}
+ var d='M '+pts.map(function(p){return p.join(' ')}).join(' L ');
+ var line=document.getElementById('crashline'),area=document.getElementById('crasharea'),rocket=document.getElementById('crashrocket');
+ if(line)line.setAttribute('d',d);
+ if(area)area.setAttribute('d',d+' L '+lastX.toFixed(1)+' 190 Z');
+ if(rocket){rocket.style.left=(lastX/300*100).toFixed(1)+'%';rocket.style.bottom=((200-lastY)/200*90).toFixed(1)+'%'}
+ var n=document.getElementById('crashnum'),pay=document.getElementById('crashpay');
+ if(n)n.textContent='×'+mult.toFixed(2);
+ if(pay)pay.textContent=money(Math.floor(state.crash.stake*mult))+' LC';
+}
+setInterval(function(){if(state.crash){if(settle())render();else animateCrashGraph()}},180);
 save();render();
 })();
 </script></body></html>
