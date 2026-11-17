@@ -317,11 +317,11 @@ function scheduleYandexSave(){
  },4000);
 }
 var KEY='lucky_city_yandex_v1';
-var MODES=[['plinko','🔮','PLINKO','Удача на каждом шагу'],['mines','💎','MINES','Найди безопасную клетку'],['crash','🚀','CRASH','Успей забрать выигрыш'],['wheel','🎡','LUCKY WHEEL','Колесо подарков']];
+var MODES=[['plinko','🔮','PLINKO','Удача на каждом шагу'],['mines','💎','MINES','Найди безопасную клетку'],['crash','🚀','CRASH','Успей забрать выигрыш'],['wheel','🎡','LUCKY WHEEL','Колесо подарков'],['slots','♠','ROYAL SLOTS','Три барабана с выплатами'],['roulette','◎','ROULETTE','Европейская рулетка'],['blackjack','♣','BLACKJACK','21 против дилера'],['poker','♦','VIDEO POKER','Покер с заменой карт']];
 var DIST=[['🌃','Neon Street',1],['🎡','Fortune Square',5],['🏙️','Golden District',12],['👑','Royal Heights',25]];
 var qs=[['play3','Сыграть 3 раунда',3],['play8','Сыграть 8 раундов',8],['different2','Сыграть в двух режимах',2]];
 var state,screen='city',mode='plinko',stake=50,lastResult='',ball=false,toast='',lost=[],tab='season',spinning=false,plinkoSlot=-1,plinkoPath=[],wheelSlot=-1,wheelTurn=0,wheelReveal=false,roundsWon=0,crashBurstUntil=0;
-function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,streak:0,streakBest:0,modeStats:{},history:[],buildings:{},districtPayoutDay:null,quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,club:null}}
+function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,streak:0,streakBest:0,modeStats:{},history:[],buildings:{},districtPayoutDay:null,quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,blackjack:null,poker:null,casinoLast:null,shopSkin:'classic',ownedSkins:['classic'],club:null}}
 try{
  var localState=JSON.parse(localStorage.getItem(KEY));
  state=cloudState&&(!localState||(cloudState.lastSavedAt||0)>=(localState.lastSavedAt||0))?cloudState:localState||fresh();
@@ -335,6 +335,10 @@ if(!Array.isArray(state.history))state.history=[];
 if(!state.buildings||typeof state.buildings!=='object'||Array.isArray(state.buildings))state.buildings={};
 for(const key of ['neon','fortune','golden','royal']){const n=state.buildings[key];state.buildings[key]=Number.isSafeInteger(n)&&n>=0&&n<=5?n:0;}
 if(typeof state.districtPayoutDay!=='string')state.districtPayoutDay=null;
+if(!Array.isArray(state.ownedSkins))state.ownedSkins=['classic'];
+if(typeof state.shopSkin!=='string'||!state.ownedSkins.includes(state.shopSkin))state.shopSkin='classic';
+if(!state.blackjack||typeof state.blackjack!=='object')state.blackjack=null;
+if(!state.poker||typeof state.poker!=='object')state.poker=null;
 if(!state.quests||!Array.isArray(state.quests.claimed)||!Array.isArray(state.quests.modes))state.quests={date:day(),rounds:0,modes:[],claimed:[]};
 function day(){return new Date().toISOString().slice(0,10)}
 function save(){try{state.lastSavedAt=Date.now();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}scheduleYandexSave()}
@@ -398,14 +402,48 @@ function district(){
  html+='<p class="muted">Награды начисляются только при нажатии «Забрать» и не накапливаются за пропущенные дни. Экономика локальноверсии сохраняется на этом устройстве.</p>';return html;
 }
 
+
+var SUITS=['♠','♥','♣','♦'],RED_NUMBERS=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+function deck52(){var a=[];for(var s=0;s<4;s++)for(var r=2;r<=14;r++)a.push({r:r,s:SUITS[s]});for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),v=a[i];a[i]=a[j];a[j]=v}return a}
+function draw(c){return c.deck.pop()}
+function cardScore(c){return c.r===14?11:Math.min(c.r,10)}
+function handScore(h){var n=0,aces=0;h.forEach(function(c){n+=cardScore(c);if(c.r===14)aces++});while(n>21&&aces){n-=10;aces--}return n}
+function casinoStake(name){if(state.mines||state.crash||state.blackjack||state.poker||ball||spinning)throw Error('Завершите предыдущий раунд');change(-stake,name+' · ставка')}
+function casinoResult(id,label,payout){if(payout>0)change(payout,label);round(id);state.casinoLast={id:id,label:label,payout:payout};lastResult=payout>0?'Получено '+money(payout)+' LC · '+label:label;save()}
+function playSlots(){casinoStake('Royal Slots');var symbols=['7','◆','♛','★','♣','♦'],multipliers=[25,15,12,10,7,5],r=[0,0,0].map(function(){return Math.floor(Math.random()*6)}),m=0;if(r[0]===r[1]&&r[1]===r[2])m=multipliers[r[0]];else if(r[0]===r[1]||r[1]===r[2]||r[0]===r[2])m=1;state.slotsReels=r.map(function(i){return symbols[i]});casinoResult('slots','Royal Slots · ×'+m,stake*m)}
+function playRoulette(color){if(!['red','black','even','odd','zero'].includes(color))throw Error('Неверная ставка');casinoStake('Roulette');var n=Math.floor(Math.random()*37),red=RED_NUMBERS.includes(n),win=color==='zero'?n===0:color==='red'?red:color==='black'?n!==0&&!red:color==='even'?n!==0&&n%2===0:n%2===1;state.rouletteLast=n;casinoResult('roulette','Roulette · '+n,win?stake*(color==='zero'?36:2):0)}
+function startBlackjack(){casinoStake('Blackjack');var g={stake:stake,deck:deck52(),player:[],dealer:[]};g.player=[draw(g),draw(g)];g.dealer=[draw(g),draw(g)];state.blackjack=g;lastResult='';save();if(handScore(g.player)===21||handScore(g.dealer)===21)finishBlackjack()}
+function finishBlackjack(){var g=state.blackjack;if(!g)return;var p=handScore(g.player),d=handScore(g.dealer),pn=p===21&&g.player.length===2,dn=d===21&&g.dealer.length===2;if(p<=21&&!pn&&!dn)while(d<17){g.dealer.push(draw(g));d=handScore(g.dealer)}var win=0,label='Blackjack · проигрыш';if(p>21)label='Blackjack · перебор';else if(pn&&!dn){win=Math.floor(g.stake*2.5);label='Blackjack · натуральное 21'}else if(p===d){win=g.stake;label='Blackjack · ничья'}else if(d>21||p>d){win=g.stake*2;label='Blackjack · победа'}state.lastBlackjack={player:g.player,dealer:g.dealer};state.blackjack=null;casinoResult('blackjack',label,win)}
+function blackjackHit(){var g=state.blackjack;if(!g)throw Error('Сначала раздайте карты');g.player.push(draw(g));if(handScore(g.player)>=21)finishBlackjack();else save()}
+function blackjackStand(){if(!state.blackjack)throw Error('Нет активной игры');finishBlackjack()}
+function pokerRank(cards){var ranks=cards.map(function(c){return c.r}).sort(function(a,b){return a-b}),counts={},flush=cards.every(function(c){return c.s===cards[0].s});ranks.forEach(function(r){counts[r]=(counts[r]||0)+1});var frequency=Object.values(counts).sort(function(a,b){return b-a}),unique=[...new Set(ranks)],straight=unique.length===5&&(unique[4]-unique[0]===4||unique.join(',')==='2,3,4,5,14');if(flush&&straight&&ranks[0]===10)return ['Роял-флеш',250];if(flush&&straight)return ['Стрит-флеш',50];if(frequency[0]===4)return ['Каре',25];if(frequency[0]===3&&frequency[1]===2)return ['Фулл-хаус',9];if(flush)return ['Флеш',6];if(straight)return ['Стрит',4];if(frequency[0]===3)return ['Сет',3];if(frequency[0]===2&&frequency[1]===2)return ['Две пары',2];if(Object.keys(counts).some(function(r){return +r>=11&&counts[r]===2}))return ['Валеты или выше',1];return ['Без комбинации',0]}
+function startPoker(){casinoStake('Video Poker');var g={stake:stake,deck:deck52(),cards:[],held:[]};for(var i=0;i<5;i++)g.cards.push(draw(g));state.poker=g;lastResult='';save()}
+function pokerHold(i){var g=state.poker;if(!g||i<0||i>4)throw Error('Нет активных карт');g.held=g.held.includes(i)?g.held.filter(function(x){return x!==i}):g.held.concat(i);save()}
+function pokerDraw(){var g=state.poker;if(!g)throw Error('Нет активной раздачи');for(var i=0;i<5;i++)if(!g.held.includes(i))g.cards[i]=draw(g);var r=pokerRank(g.cards);state.lastPoker=g.cards.slice();state.poker=null;casinoResult('poker','Video Poker · '+r[0]+' ×'+r[1],g.stake*r[1])}
+var COSMETICS=[{id:'classic',name:'Классический стиль',price:0,info:'Фирменный фиолетовый'},{id:'gold',name:'Gold Skyline',price:900,info:'Золотая подсветка'},{id:'emerald',name:'Emerald Lounge',price:1200,info:'Изумрудное оформление'},{id:'ice',name:'Ice Diamond',price:1500,info:'Ледяной неон'}];
+function buySkin(id){var c=COSMETICS.find(function(x){return x.id===id});if(!c)throw Error('Предмет не найден');if(state.ownedSkins.includes(id))return equipSkin(id);change(-c.price,'Стиль · '+c.name);state.ownedSkins.push(id);state.shopSkin=id;save();snack('Открыт стиль '+c.name)}
+function equipSkin(id){if(!state.ownedSkins.includes(id))throw Error('Сначала откройте стиль');state.shopSkin=id;save();snack('Стиль выбран')}
+
 function act(type,value){try{
  if(type==='nav'){screen=value;lastResult='';lost=[];yandexPlay(false)}
+ if(type==='casino'){screen='casino';lastResult='';yandexPlay(false)}
+ if(type==='shop'){screen='shop';lastResult='';yandexPlay(false)}
  if(type==='mode'){screen='mode';mode=value;lastResult='';lost=[];yandexPlay(true)}
  if(type==='back'){screen='city';lastResult='';yandexPlay(false)}
  if(type==='district'){screen='district';lastResult='';yandexPlay(false)}
  if(type==='building-upgrade')buyBuilding(value);
  if(type==='city-income')claimCityIncome();
  if(type==='stake')stake=Number(value);
+ if(type==='slots-spin')playSlots();
+ if(type==='roulette-bet')playRoulette(value);
+ if(type==='blackjack-start')startBlackjack();
+ if(type==='blackjack-hit')blackjackHit();
+ if(type==='blackjack-stand')blackjackStand();
+ if(type==='poker-start')startPoker();
+ if(type==='poker-hold')pokerHold(Number(value));
+ if(type==='poker-draw')pokerDraw();
+ if(type==='skin-buy')buySkin(value);
+ if(type==='skin-equip')equipSkin(value);
  if(type==='info'){screen='info';yandexPlay(false)}
  if(type==='reset'){if(confirm('Сбросить все тестовые монеты и прогресс?')){state=fresh();screen='city';lastResult='';lost=[];plinkoSlot=-1;wheelSlot=-1}}
  if(type==='daily'){if(state.daily===day())throw Error('Подарок уже получен');var gift=dailyReward();state.streak=consecutiveDaily();state.streakBest=Math.max(state.streakBest,state.streak);change(gift,'Подарок · день '+state.streak);state.daily=day();snack('🔥 Серия '+state.streak+' дн. · +'+gift+' LC')}
