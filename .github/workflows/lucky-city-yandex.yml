@@ -1,0 +1,39 @@
+name: Build Lucky City for Yandex Games
+on:
+  push:
+    paths:
+      - 'yandex-games/**'
+      - '.github/workflows/lucky-city-yandex.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate game archive and JavaScript
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import re
+          html = Path('yandex-games/index.html').read_text(encoding='utf-8')
+          assert '<script src="/sdk.js"></script>' in html, 'Missing Yandex SDK'
+          assert 'LoadingAPI' in html, 'Missing Game Ready'
+          assert 'lucky_city_yandex_v1' in html, 'Missing dedicated save key'
+          assert 'getData' in html and 'setData' in html, 'Missing player cloud save'
+          assert '<title>Lucky City</title>' in html, 'Unexpected game title'
+          script = re.search(r'<script>([\s\S]*?)</script>', html)
+          assert script, 'Missing app script'
+          Path('/tmp/lucky-yandex-app.js').write_text(script.group(1), encoding='utf-8')
+          print('HTML validation passed')
+          PY
+          node --check /tmp/lucky-yandex-app.js
+      - name: Package root index.html for Yandex Games
+        run: cd yandex-games && zip -q -9 ../lucky-city-yandex-games.zip index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lucky-city-yandex-games
+          path: lucky-city-yandex-games.zip
+          retention-days: 30
