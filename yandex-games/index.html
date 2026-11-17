@@ -478,7 +478,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Local save unavailable',e)}
       if(sdkPlayer?.setData){
         clearTimeout(saveTimer);
-        saveTimer=setTimeout(()=>sdkPlayer.setData({luckyCityV1:state},true).catch(err=>console.warn('Cloud save retry on next change',err)),2000);
+        saveTimer=setTimeout(()=>{const snapshot=JSON.parse(JSON.stringify(state));sdkPlayer.setData({luckyCityV1:snapshot},true).catch(err=>console.warn('Cloud save retry on next change',err));},2000);
       }
     }
     function day(){ return new Date().toISOString().slice(0,10); }
@@ -486,19 +486,9 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     function level(){ return 1 + Math.floor(state.xp / 250); }
     function levelProgress(){ return (state.xp % 250) / 250 * 100; }
     function icon(name, cls=''){ return `<span class="icon ${cls}">${icons[name]||''}</span>`; }
-    function playUISound(type='tap'){
-      if(!gameSound)return;
-      try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
-        const a=playUISound.ctx||(playUISound.ctx=new C());if(a.state==='suspended')a.resume().catch(()=>{});
-        const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
-        o.type=type==='win'?'sine':'triangle';o.frequency.setValueAtTime(type==='win'?660:type==='lose'?190:420,t);
-        o.frequency.exponentialRampToValueAtTime(type==='win'?990:type==='lose'?110:360,t+.12);
-        g.gain.setValueAtTime(.045,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
-        o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.15);
-      }catch(e){}
-    }
     function showToast(msg){ toastText = msg; render(); clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ toastText=''; render(); }, 2500); }
     function change(delta, reason){
+      if(!Number.isSafeInteger(delta)||!Number.isSafeInteger(state.balance+delta)||state.balance+delta>1000000000)throw Error('Некорректная сумма игровых LC');
       if(state.balance + delta < 0) throw new Error('Недостаточно LC');
       state.balance += delta;
       if(delta > 0) state.earned += delta;
@@ -547,7 +537,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
 
     function openMode(mode){ if(!MODE_META[mode])return;if(currentMode==='crash'&&mode!=='crash')crashSeriesRemaining=0; if(currentMode==='plinko'&&mode!=='plinko'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} currentMode = mode; screen = 'mode'; gameplayActive(true); render(); }
-    function setScreen(name){ if(name!=='mode'&&name!=='crash')crashSeriesRemaining=0;screen = name; gameplayActive(name==='mode'); save(); render(); if(name!=='mode'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} }
+    function setScreen(name){ if(name!=='mode'||currentMode!=='crash')crashSeriesRemaining=0;screen = name; gameplayActive(name==='mode'); save(); render(); if(name!=='mode'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} }
 
     const PLINKO_ROWS = 12;
     const PLINKO_PAYOUTS = {
@@ -565,6 +555,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     function plinkoSetCount(value){if(plinkoRound)return;const v=Number(value);if(![1,3,5,10,25].includes(v))throw new Error('Недопустимое число шариков');plinkoCount=v;render();}
     function playPlinko(){
       if(plinkoRound)return;
+      if(state.mines||state.crash||state.blackjack||state.poker||slotsSpinning||rouletteSpinning||spinning)throw Error('Сначала завершите текущую игру');
       const total=stake*plinkoCount;
       if(state.balance<total)throw new Error('Недостаточно LC для всех шариков');
       if(!Number.isSafeInteger(total)||total<=0)throw new Error('Недопустимая ставка');
@@ -576,7 +567,6 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         addRound('plinko');
       }
       // Atomic settlement protects paid virtual rounds against tab close, reload and iOS suspension.
-      if(payout)playUISound('win');
       if(payout)change(payout,'Plinko · '+plinkoCount+' шар. · выигрыш');
       state.lastPlinko={risk:plinkoRisk,stake:stake,count:plinkoCount,spent:total,win:payout,slots:balls.map(b=>b.slot),at:Date.now()};
       save();
@@ -653,7 +643,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
 
     function startMines(){
-      if(state.mines || state.crash || state.blackjack || state.poker) throw new Error('Сначала завершите текущий раунд');
+      if(state.mines || state.crash || state.blackjack || state.poker || plinkoRound || spinning || slotsSpinning || rouletteSpinning) throw new Error('Сначала завершите текущий раунд');
       if(stake>200)throw new Error('В Mines максимум 200 LC');
       change(-stake, 'Mines · ставка');
       const nums = Array.from({length:25}, (_,i)=>i);
@@ -717,7 +707,6 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const g=state.crash;if(!g)return false;
       state.crash=null;cancelAnimationFrame(crashTicker);crashTicker=null;
       const paid=kind==='cash'?Math.floor(g.stake*mult):0;
-      playUISound(paid?'win':'lose');
       if(paid)change(paid,'Crash · '+(g.autoEnabled?'автовывод':'кэшаут')+' ×'+mult.toFixed(2));
       state.crashHistory.unshift({point:g.point,paid,stake:g.stake,at:Date.now(),auto:!!g.autoEnabled});
       state.crashHistory=state.crashHistory.slice(0,20);
@@ -765,7 +754,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
     function startCrash(fromSeries=false){
       if(!fromSeries){crashSeriesRemaining=crashSeriesEnabled&&crashAutoEnabled?crashSeriesCount:0;crashSeriesStartBalance=state.balance;}
-      if(state.crash||state.mines||state.blackjack||state.poker||slotsSpinning||rouletteSpinning)throw Error('Завершите предыдущую игру');
+      if(state.crash||state.mines||state.blackjack||state.poker||plinkoRound||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите предыдущую игру');
       if(state.balance<stake)throw Error('Недостаточно LC');
       if(crashAutoEnabled&&(!Number.isFinite(crashAutoTarget)||crashAutoTarget<1.1||crashAutoTarget>100))throw Error('Автовывод 1,10–100');
       change(-stake,'Crash · ставка');addRound('crash');
@@ -788,6 +777,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     
     function spinWheel(){
       if(spinning) return;
+      if(state.mines||state.crash||state.blackjack||state.poker||plinkoRound||slotsSpinning||rouletteSpinning)throw Error('Сначала завершите текущую игру');
       if(state.wheelDay === day()) throw new Error('Колесо уже вращалось сегодня');
       const prize = pick([[0,10],[50,25],[100,28],[150,18],[300,14],[500,5]]);
       wheelIndex = [0,50,100,150,300,500].indexOf(prize);
@@ -795,7 +785,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       spinning = true;
       state.wheelDay = day();
       addRound('wheel');
-      playUISound(prize?'win':'lose');if(prize) change(prize, 'Lucky Wheel · приз');
+      if(prize) change(prize, 'Lucky Wheel · приз');
       save();
       render();
       setTimeout(()=>{
@@ -831,7 +821,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       cancelAnimationFrame(crashTicker);crashTicker=null;
       state = fresh();
       screen = 'city';
-      stake = 100;crashSeriesRemaining=0;crashSeriesEnabled=false;crashAutoEnabled=true;crashAutoTarget=2.4;mineCount=3;rouletteBets=[];slotsSpinning=false;rouletteSpinning=false;
+      stake = 100;crashAutoEnabled=true;crashAutoTarget=2.4;mineCount=3;rouletteBets=[];slotsSpinning=false;rouletteSpinning=false;
       revealBombs = [];
       plinkoIndex = null;
       cancelAnimationFrame(plinkoFrame); plinkoRound=null;
@@ -978,8 +968,8 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     function cardHTML(c){return `<span class="v2-card ${'♥♦'.includes(c.suit)?'red':''}"><b>${cardLabel(c)}</b><i>${c.suit}</i></span>`;}
     function handValue(hand){let total=0,aces=0;for(const c of hand){total+=c.r===14?11:Math.min(c.r,10);if(c.r===14)aces++;}while(total>21&&aces){total-=10;aces--;}return total;}
     function payTablePoker(cards){let ranks=cards.map(c=>c.r).sort((a,b)=>a-b),count={};for(const r of ranks)count[r]=(count[r]||0)+1;let freq=Object.values(count).sort((a,b)=>b-a);let flush=cards.every(c=>c.suit===cards[0].suit);let u=[...new Set(ranks)];let straight=u.length===5&&(u[4]-u[0]===4||u.join(',')==='2,3,4,5,14');if(flush&&straight&&ranks[0]===10)return ['Роял-флеш',250];if(flush&&straight)return ['Стрит-флеш',50];if(freq[0]===4)return ['Каре',25];if(freq[0]===3&&freq[1]===2)return ['Фулл-хаус',9];if(flush)return ['Флеш',6];if(straight)return ['Стрит',4];if(freq[0]===3)return ['Сет',3];if(freq[0]===2&&freq[1]===2)return ['Две пары',2];if(Object.entries(count).some(([rank,n])=>+rank>=11&&n===2))return ['Пара валетов+',1];return ['Без комбинации',0];}
-    function casinoReady(){if(state.mines||state.crash||state.blackjack||state.poker||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите активную игру');if(state.balance<stake)throw Error('Недостаточно LC');}
-    function recordCasino(mode,label,payout){playUISound(payout?'win':'lose');if(payout)change(payout,label);addRound(mode);state.lastCasinoResult={mode,label,payout};save();showToast(label+(payout?' · +'+money(payout)+' LC':''));render();}
+    function casinoReady(){if(state.mines||state.crash||state.blackjack||state.poker||plinkoRound||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите активную игру');if(state.balance<stake)throw Error('Недостаточно LC');}
+    function recordCasino(mode,label,payout){if(payout)change(payout,label);addRound(mode);state.lastCasinoResult={mode,label,payout};save();showToast(label+(payout?' · +'+money(payout)+' LC':''));render();}
     const SLOT_SYMBOLS=['7','♛','◆','BAR','★','♣','W','S'];
     const SLOT_WEIGHTS=[2,3,5,7,8,9,1,2];
     const SLOT_PAY={0:[30,84,240],1:[24,60,180],2:[18,48,120],3:[12,36,90],4:[9,24,60],5:[6,18,48],6:[30,84,240]};
@@ -1009,7 +999,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       return {payout:total,lines,scatter,free};
     }
     function playSlots(){
-      if(state.mines||state.crash||state.blackjack||state.poker||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите предыдущую игру');
+      if(state.mines||state.crash||state.blackjack||state.poker||plinkoRound||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите предыдущую игру');
       const free=state.slotsFree>0,price=free?0:stake;if(state.balance<price)throw Error('Недостаточно LC');
       if(price)change(-price,'Royal Slots · ставка');else state.slotsFree--;
       const grid=Array.from({length:5},()=>Array.from({length:3},slotSymbol));
@@ -1040,7 +1030,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const sum=rouletteBets.reduce((a,b)=>a+b.amount,0);if(sum+rouletteChip>state.balance)throw Error('Недостаточно LC для ставок');
       rouletteBets.push({id,amount:rouletteChip});render();}
     function rouletteClear(){if(rouletteSpinning)return;rouletteBets=[];render();}
-    function rouletteSpin(){if(rouletteSpinning||slotsSpinning||state.crash||state.mines||state.blackjack||state.poker)throw Error('Завершите предыдущую игру');
+    function rouletteSpin(){if(rouletteSpinning||slotsSpinning||plinkoRound||spinning||state.crash||state.mines||state.blackjack||state.poker)throw Error('Завершите предыдущую игру');
       const total=rouletteBets.reduce((a,b)=>a+b.amount,0);if(!total)throw Error('Разместите фишки');
       change(-total,'Roulette · ставки');
       const n=EUROPEAN_WHEEL[Math.floor(Math.random()*37)];
@@ -1152,7 +1142,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
           <div class="plinkoBetGrid"><div><div class="plinkoGroupLabel">СТАВКА НА ШАРИК · LC</div><div class="stakes">${options.map(v=>`<button class="stake ${stake===v?'on':''}" data-action="stake" data-value="${v}" ${plinkoRound?'disabled':''}>${money(v)}</button>`).join('')}</div></div><div><div class="plinkoGroupLabel">ШАРИКИ</div><div class="plinkoCounts">${[1,3,5,10,25].map(v=>`<button class="${plinkoCount===v?'on':''}" data-action="plinko-count" data-value="${v}" ${plinkoRound?'disabled':''}>${v}</button>`).join('')}</div></div></div>
           <div class="plinkoSummary"><span>Стоимость запуска</span><strong>${money(stake*plinkoCount)} LC</strong></div>
           <button class="action primary full plinkoLaunch" data-action="play-plinko" ${plinkoRound||state.balance<stake*plinkoCount?'disabled':''}>${plinkoRound?'Шарики в движении…':'Запустить '+plinkoCount+' '+(plinkoCount===1?'шарик':plinkoCount<5?'шарика':'шариков')}</button>
-          <div class="tiny plinkoDisclosure">У каждого шарика 12 независимых отскоков влево или вправо. Множитель определяется ячейкой приземления. Только виртуальные LC.</div>
+          <div class="tiny plinkoDisclosure">До 25 шариков за запуск. У каждого шарика 12 независимых отскоков влево или вправо. Множитель определяется ячейкой приземления. Только виртуальные LC.</div>
         </div>`;
       }
 
@@ -1240,14 +1230,18 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
 
     function leaderboardScreen(){
-      const scores=[['plinko','Plinko'],['crash','Crash'],['slots','Slots']];
-      return `<div class="section-title"><h3>Турнир Casino Empire</h3><small>NPC-режим · локально</small></div>
-      <div class="glass"><strong>7-дневные испытания города</strong><p class="tiny">Сравнивай свой прогресс с демонстрационными NPC. Реального сетевого рейтинга нет; наград реальными деньгами нет.</p></div>
-      ${scores.map(([mode,title])=>{const score=(state.modeStats[mode]||0)*20;
-        const bots=[['NPC Neon Fox',240],['NPC Golden Ace',160],['NPC Velvet',80],['Вы',score]].sort((a,b)=>b[1]-a[1]);
-        return `<div class="glass" style="margin:12px 0"><strong>${title} · очки активности</strong>${bots.map(([name,pts],i)=>`<div class="row" style="padding:9px;border-bottom:1px solid #7a568447"><span>${i+1}. ${name}</span><strong class="gold">${pts}</strong></div>`).join('')}</div>`;
-      }).join('')}`;
+      const myScore = state.xp + state.spins*22 + Math.floor(state.earned/20);
+      const rows = [...LEADERS, ['Вы', myScore]].sort((a,b)=>b[1]-a[1]);
+      return `
+        <div class="section-title"><h3>Рейтинг города</h3><small>NPC-участники, не реальные игроки</small></div>
+        <div class="leaderboard">
+          ${rows.map(([name,score],idx)=>`
+            <div class="card list-item"><div><strong>${idx+1}. ${name}</strong><small>${name==='Вы' ? 'Ваш локальный профиль' : 'NPC · тестовый соперник'}</small></div><strong class="gold">${money(score)} XP</strong></div>
+          `).join('')}
+        </div>
+      `;
     }
+
     function clubsScreen(){
       return `
         <div class="section-title"><h3>Клубы</h3><small>локальный демо-раздел</small></div>
@@ -1279,7 +1273,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
           <div class="xp-bar" style="margin-top:16px"><span style="width:${levelProgress()}%"></span></div>
           <div class="subrow"><span>${money(state.xp)} XP</span><span>${Math.floor(levelProgress())}%</span></div>
         </div>
-        <button data-action="nav" data-value="leaderboard" class="action secondary full" style="margin:14px 0">🏆 Турниры и NPC-рейтинг</button><div class="glass lcSeason"><strong>СЕЗОН · КОЛЛЕКЦИЯ КАЗИНО</strong><p class="tiny">Прогресс: ${state.season.xp} XP · косметические награды без преимущества в играх</p><div class="lcSeasonGrid">${[100,300,700,1500].map((need,i)=>`<button data-action="season-claim" data-value="${i}" ${state.season.claimed.includes(i)||state.season.xp<need?'disabled':''}>${['Неоновая эмблема','Золотые карты','Королевский фон','Алмазный титул'][i]}<small>${state.season.claimed.includes(i)?'Получено':need+' XP'}</small></button>`).join('')}</div><p class="tiny">Открыто коллекций: ${state.collectibles.length} · престиж города: ${state.cityPrestige}</p><button class="action secondary" data-action="prestige" ${level()<25?'disabled':''}>Получить знак престижа</button></div><div class="glass lcSettings"><div class="row"><strong>НАСТРОЙКИ</strong><button data-action="setting-sound" class="action secondary">Звук: ${state.settings.sound?'Вкл':'Выкл'}</button><button data-action="setting-motion" class="action secondary">Анимации: ${state.settings.reducedMotion?'Меньше':'Все'}</button></div></div><div class="section-title"><h3>Статистика</h3><small>игровая активность</small></div>
+        <div class="glass lcSeason"><strong>СЕЗОН · КОЛЛЕКЦИЯ КАЗИНО</strong><p class="tiny">Прогресс: ${state.season.xp} XP · косметические награды без преимущества в играх</p><div class="lcSeasonGrid">${[100,300,700,1500].map((need,i)=>`<button data-action="season-claim" data-value="${i}" ${state.season.claimed.includes(i)||state.season.xp<need?'disabled':''}>${['Неоновая эмблема','Золотые карты','Королевский фон','Алмазный титул'][i]}<small>${state.season.claimed.includes(i)?'Получено':need+' XP'}</small></button>`).join('')}</div><p class="tiny">Открыто коллекций: ${state.collectibles.length} · престиж города: ${state.cityPrestige}</p><button class="action secondary" data-action="prestige" ${level()<25?'disabled':''}>Получить знак престижа</button></div><div class="glass lcSettings"><div class="row"><strong>НАСТРОЙКИ</strong><button data-action="setting-sound" class="action secondary">Звук: ${state.settings.sound?'Вкл':'Выкл'}</button><button data-action="setting-motion" class="action secondary">Анимации: ${state.settings.reducedMotion?'Меньше':'Все'}</button></div></div><div class="section-title"><h3>Статистика</h3><small>игровая активность</small></div>
         <div class="stats-grid">
           <div class="card stat"><div class="meta">${icon('history')} Раундов</div><div class="num">${money(state.spins)}</div></div>
           <div class="card stat"><div class="meta">${icon('coin')} Получено</div><div class="num">${money(state.earned)} LC</div></div>
@@ -1329,7 +1323,6 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
       if(!btn || btn.disabled) return;
-      playUISound('tap');
       const action = btn.dataset.action;
       const value = btn.dataset.value;
       try {
@@ -1395,7 +1388,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     try{ysdk?.features?.LoadingAPI?.ready();}catch(e){console.warn('LoadingAPI failed',e)}
     document.addEventListener('visibilitychange',()=>{
       if(document.hidden){crashSeriesRemaining=0;gameplayActive(false);if(sdkPlayer?.setData)sdkPlayer.setData({luckyCityV1:state},true).catch(()=>{})}
-      else if(screen==='mode')gameplayActive(true);
+      else {if(state.crash){crashResolve(Date.now());if(state.crash&&!crashTicker)crashTicker=requestAnimationFrame(crashStep);}if(screen==='mode')gameplayActive(true);}
     });
   })();
   </script>
