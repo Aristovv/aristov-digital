@@ -456,6 +456,17 @@ button.primary:active{filter:brightness(.9)}
 @media(min-width:700px){.app{max-width:620px}.nav{max-width:620px}.cityMain{height:370px}.casinoDistrictScene{height:350px}}
 @media(max-width:360px){.premiumTop{grid-template-columns:47px 1fr 35px;gap:6px}.premiumAvatar{height:45px;width:45px}.premiumIdentity small{font-size:7px}.premiumResourceBar strong{font-size:16px}.cityMainBrand h1{font-size:31px}.cityStatIcon{font-size:19px}.cityStat strong{font-size:14px}.entranceChip{height:46px;width:46px;font-size:26px}.casinoEntrance b{font-size:18px}.cityQuickLinks b{font-size:10px}.hall-icon{width:62px;height:62px}.premiumHall b{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.citySky *,.casinoDistrictScene *, .casinoCard,.premiumHall{animation:none!important;transition:none!important}}
+
+.shopTabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:1px 0 13px;margin:2px 0 6px;-webkit-overflow-scrolling:touch}
+.shopTabs::-webkit-scrollbar{display:none}
+.shopTabs button{flex:none;min-height:43px;white-space:nowrap;padding:8px 10px;border:1px solid #be9b7a7b;border-radius:14px;background:linear-gradient(145deg,#30213d,#1e1528);color:#ebd5c4;font:800 11px system-ui}
+.shopTabs button.active{background:linear-gradient(160deg,#bd8d56,#5f2e69 40%,#351b41);color:#ffe8ae;border-color:#f2d499;box-shadow:inset 0 1px #fff9,0 0 15px #ad73e758}
+.premiumProductArt{height:106px;position:relative;display:grid;place-items:center;font:900 62px Georgia,serif;color:#f9d5a0;border:3px ridge #d8ac74;border-radius:15px;box-shadow:inset 0 0 22px #0008,0 9px 18px #07030e9a;text-shadow:0 0 16px #ebba7b}
+.premiumItem:nth-child(3n+1) .premiumProductArt{background:radial-gradient(circle at 50% 30%,#bc9da2,#3e3149 64%,#120d22)}
+.premiumItem:nth-child(3n+2) .premiumProductArt{background:radial-gradient(circle at 50% 30%,#cc9e4b,#5a362a 63%,#170e19)}
+.premiumItem:nth-child(3n) .premiumProductArt{background:radial-gradient(circle at 50% 30%,#b65de1,#472361 65%,#130b21)}
+.premium-стиль .premiumProductArt{background:radial-gradient(circle at 50% 30%,#aa59ed,#2b1946)}
+.premium-здание .premiumProductArt{background:radial-gradient(circle at 50% 30%,#e1b377,#3d2945)}
 </style><script src="/sdk.js"></script></head>
 <body><div class="app" id="app"></div><script>
 (async function(){
@@ -487,7 +498,7 @@ var KEY='lucky_city_yandex_v1';
 var MODES=[['plinko','🔮','PLINKO','Удача на каждом шагу'],['mines','💎','MINES','Найди безопасную клетку'],['crash','🚀','CRASH','Успей забрать выигрыш'],['wheel','🎡','LUCKY WHEEL','Колесо подарков'],['slots','♠','ROYAL SLOTS','Три барабана с выплатами'],['roulette','◎','ROULETTE','Европейская рулетка'],['blackjack','♣','BLACKJACK','21 против дилера'],['poker','♦','VIDEO POKER','Покер с заменой карт']];
 var DIST=[['🌃','Neon Street',1],['🎡','Fortune Square',5],['🏙️','Golden District',12],['👑','Royal Heights',25]];
 var qs=[['play3','Сыграть 3 раунда',3],['play8','Сыграть 8 раундов',8],['different2','Сыграть в двух режимах',2]];
-var state,screen='city',mode='plinko',stake=50,lastResult='',ball=false,toast='',lost=[],tab='season',spinning=false,plinkoSlot=-1,plinkoPath=[],wheelSlot=-1,wheelTurn=0,wheelReveal=false,roundsWon=0,crashBurstUntil=0;
+var shopTab='featured',state,screen='city',mode='plinko',stake=50,lastResult='',ball=false,toast='',lost=[],tab='season',spinning=false,plinkoSlot=-1,plinkoPath=[],wheelSlot=-1,wheelTurn=0,wheelReveal=false,roundsWon=0,crashBurstUntil=0;
 function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,streak:0,streakBest:0,modeStats:{},history:[],buildings:{},districtPayoutDay:null,quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,blackjack:null,poker:null,casinoLast:null,shopSkin:'classic',ownedSkins:['classic'],club:null}}
 try{
  var localState=JSON.parse(localStorage.getItem(KEY));
@@ -595,6 +606,7 @@ function act(type,value){try{
  if(type==='nav'){screen=value;lastResult='';lost=[];yandexPlay(false)}
  if(type==='casino'){screen='casino';lastResult='';yandexPlay(false)}
  if(type==='shop'){screen='shop';lastResult='';yandexPlay(false)}
+ if(type==='shop-tab'){if(!['featured','vip','packs','property','pass'].includes(value))throw Error('Нет такой категории');shopTab=value;screen='shop';yandexPlay(false)}
  if(type==='mode'){screen='mode';mode=value;lastResult='';lost=[];yandexPlay(true)}
  if(type==='back'){screen='city';lastResult='';yandexPlay(false)}
  if(type==='district'){screen='district';lastResult='';yandexPlay(false)}
@@ -671,13 +683,18 @@ function casinoExtra(){
 }
 var PREMIUM_CATALOG=[['VIP Silver','Серебряная рамка и статус','VIP'],['VIP Gold','Золотой профиль и анимация','VIP'],['VIP Diamond','Особый титул и платиновый блеск','VIP'],['Royal Penthouse','Уникальный облик небоскрёба','ЗДАНИЕ'],['Luxury Neon','Оформление кварталов','СТИЛЬ'],['Season Pass','Сезонные косметические награды','СЕЗОН']];
 function shop(){
- var h='<section class="casinoHero shopHero"><small class="subtitle">LUCKY CITY 2.0 · CASINO EMPIRE</small><h1>Premium Shop</h1><p>Элитные облики, коллекции, VIP-статусы и сезонные предметы. Покупки за реальные деньги пока не подключены.</p></section>'+heading('Облики за игровые LC','Работают без доната')+'<div class="cosmetics">';
+ var categories=[['featured','Все товары','✦'],['vip','VIP','♛'],['packs','Наборы','◈'],['property','Здания','▥'],['pass','Сезон','✧']];
+ var h='<section class="casinoHero shopHero"><small class="subtitle">LUCKY CITY 2.0 · CASINO EMPIRE</small><h1>Premium Shop</h1><p>VIP-облики, коллекционные здания и эксклюзивные украшения города.</p></section>';
+ h+='<div class="shopTabs">'+categories.map(function(t){return button(t[2]+' '+t[1],'shop-tab',t[0],shopTab===t[0]?'active':'')}).join('')+'</div>';
+ if(shopTab==='featured'){h+=heading('Оформление города','Покупка за виртуальные LC')+'<div class="cosmetics">';
  COSMETICS.forEach(function(c){var owned=state.ownedSkins.includes(c.id),active=state.shopSkin===c.id;h+='<div class="panel skinCard skin-'+c.id+'"><span class="skinGraphic">✦</span><div><strong>'+c.name+'</strong><small>'+c.info+'</small></div>'+button(active?'Выбран':owned?'Применить':'Открыть за '+money(c.price)+' LC',owned?'skin-equip':'skin-buy',c.id,'primary',active||(!owned&&state.balance<c.price))+'</div>'});
- h+='</div>'+heading('Будущие донат-наборы','Только предпросмотр')+'<div class="premiumGrid">';
- PREMIUM_CATALOG.forEach(function(c){h+='<div class="panel premiumItem"><span class="subtitle">'+c[2]+'</span><strong>'+c[0]+'</strong><p class="muted">'+c[1]+'</p><span class="comingSoon">Оплата пока недоступна</span></div>'});
- return h+'</div><div class="panel"><p class="muted">Цены на настоящие товары будут получены из Яндекс SDK после подключения платежей. Виртуальные LC для игр на удачу не продаются.</p></div>';
+ h+='</div>';}
+ var typeMap={vip:'VIP',packs:'СТИЛЬ',property:'ЗДАНИЕ',pass:'СЕЗОН'};
+ var listings=PREMIUM_CATALOG.filter(function(c){return shopTab==='featured'||c[2]===typeMap[shopTab]});
+ h+=heading(shopTab==='featured'?'Premium Collection':categories.find(function(c){return c[0]===shopTab})[1],'Предпросмотр · без оплаты')+'<div class="premiumGrid">';
+ listings.forEach(function(c,i){var art=c[2]==='VIP'?'♛':c[2]==='ЗДАНИЕ'?'▥':c[2]==='СТИЛЬ'?'✦':'◇';h+='<div class="panel premiumItem premium-'+c[2].toLowerCase()+'"><div class="premiumProductArt">'+art+'</div><span class="subtitle">'+c[2]+'</span><strong>'+c[0]+'</strong><p class="muted">'+c[1]+'</p><span class="comingSoon">Недоступно · покупка не подключена</span></div>'});
+ h+='</div><div class="panel"><strong>О статусе магазина</strong><p class="muted">Все реальные покупки отключены. После согласования каталога с платформой цены появятся только из Яндекс SDK. Для игр на удачу платные LC не продаются. Косметика не меняет шансы на выигрыш.</p></div>';return h;
 }
-
 function modes(){var m=MODES.find(function(x){return x[0]===mode});var h=button('‹ В казино','casino','','back')+'<div class="modehead deluxeGameHead game-'+mode+'"><small>LUCKY CITY 2.0 · CASINO EMPIRE</small><div class="ico">'+m[1]+'</div><h1>'+m[2]+'</h1><p>'+m[3]+'</p></div>';
  if(mode==='plinko'){h+='<div class="board"><div class="plinko">'+(ball?'<div class="plinkoFx"><div class="plinkoBall" style="--ball-end:'+(7+plinkoSlot*14.3)+'%;'+plinkoPath.map(function(v,i){return '--x'+(i+1)+':'+v}).join(';')+'"></div></div>':'');for(var i=0;i<8;i++){h+='<div class="pins">'+Array.from({length:i+3},function(){return '<i></i>'}).join('')+'</div>'}h+='<div class="bins">'+['×3','×2','×1','×0','×1','×0.5','×3'].map(function(x,i){return '<span class="'+(!ball&&plinkoSlot===i?'hit':'')+'">'+x+'</span>'}).join('')+'</div></div><div class="plinkoLegend"><span>Металлическое поле · 8 рядов</span><strong>'+(ball?'Шарик в движении':plinkoSlot>=0?'Результат подсвечен':'Готово к запуску')+'</strong></div><p class="muted">Траектория направлена к выбранной ячейке. Исход определяется до анимации.</p></div>'}
  if(mode==='mines'){h+='<div class="mines">';for(var j=0;j<25;j++){var safe=state.mines&&state.mines.opened.indexOf(j)>=0,bad=lost.indexOf(j)>=0;h+=button(safe?'💎':bad?'💣':'✧','reveal',String(j),'cell '+(safe?'safe':bad?'bad':''),!state.mines||safe||bad)}h+='</div>';if(state.mines){var opened=state.mines.opened.length;h+='<div class="payoutDetails"><span>💎 Открыто '+opened+' из 12 безопасных клеток<br><small class="muted">Множитель: ×'+mMult(opened).toFixed(2)+'</small></span><strong>'+(opened?money(Math.floor(state.mines.stake*mMult(opened))):'0')+' LC</strong></div>'}h+='<p class="muted">3 мины · 5×5 · Забирай накопленный выигрыш до попадания на мину.</p>'}
