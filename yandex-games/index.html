@@ -345,6 +345,117 @@ body{background:radial-gradient(ellipse at top,#35214c 0,#140f22 45%,#09070e 100
 .app.skin-ice .wallet,.app.skin-ice .hero{border-color:#92dfff!important;box-shadow:0 8px 32px #89cffd33}
 @media(max-width:370px){.slotsReels span{height:88px;font-size:43px}.casinoCard{width:46px;height:70px}.heldCard .casinoCard{width:43px;height:70px}.cardRow{gap:4px}.cosmetics,.premiumGrid{gap:8px}.casinoHero h1{font-size:26px}}
 @media(prefers-reduced-motion:reduce){.mode,.casinoTable *{animation:none!important;transition:none!important}}
+
+/* ==========================================================
+   LUCKY CITY 2.0  |  CASINO EMPIRE ART DIRECTION
+   Gold / deep-violet / cinematic glass. CSS-built, responsive,
+   fully interactive: illustration is decorative, not gameplay.
+   ========================================================== */
+:root{--lux-gold:#f0c67b;--lux-light:#ffebbc;--lux-purple:#b861ee;--lux-deep:#090716}
+html{background:#070511}
+body{background:radial-gradient(circle at 50% -10%,#40204f,#0e091b 44%,#090613 80%);color:#fbf4ff}
+.app{max-width:520px;padding:12px 12px calc(112px + env(safe-area-inset-bottom,0px))}
+.gameNotice{display:flex;align-items:center;justify-content:space-between;margin:0 1px 8px;color:#ae9db6;font-size:10px;letter-spacing:.2px}
+.gameNotice button{background:transparent;color:#dfc48c;border:0;font-size:10px}
+.premiumTop{display:grid;grid-template-columns:58px 1fr 42px;align-items:center;gap:12px;padding:8px 5px 10px}
+.premiumAvatar{width:56px;height:56px;border-radius:50%;border:2px solid #f6d98f;background:radial-gradient(circle at 34% 22%,#a46ca1,#382246 70%);box-shadow:0 0 0 3px #8e55af63,inset 0 2px #fff9,0 4px 15px #000b;color:#ffde99;font-size:31px}
+.premiumAvatar span{filter:drop-shadow(0 2px 4px #0a0619)}
+.premiumIdentity{min-width:0}.premiumIdentity small{display:block;font-size:8px;letter-spacing:1px;color:#d5b5e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.premiumIdentity strong{display:block;font-size:15px;color:#faf2fa;margin:3px 0}.premiumIdentity em{display:block;text-align:right;font-style:normal;color:#c8b6d6;font-size:9px}
+.premiumExp{height:7px;border:1px solid #c9a3d68c;background:#130a1f;border-radius:99px;overflow:hidden;margin:5px 0}
+.premiumExp span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9236cf,#f8b2ff);box-shadow:0 0 12px #e77fff}
+.topSettings{border-radius:50%;height:40px;width:40px;border:1px solid #e7bf804c;background:radial-gradient(circle,#3e2d3f,#1a1224);font-size:22px;color:#f7dcac}
+.premiumResourceBar{height:53px;display:flex;align-items:center;gap:11px;padding:7px 13px;margin:0 2px 11px;background:linear-gradient(110deg,#25162f,#120d1c);border:1px solid #eac48978;border-radius:28px;box-shadow:inset 0 1px #ffffff27,0 9px 17px #0005}
+.resourceCoin{height:37px;width:37px;display:grid;place-items:center;flex:none;border:3px double #ffde97;border-radius:50%;color:#6b3d24;font-size:24px;background:radial-gradient(circle at 25% 22%,#fff5c4,#e5ad46 60%,#906127);box-shadow:0 0 15px #ebba6398}
+.premiumResourceBar>div{min-width:0;flex:1}.premiumResourceBar small{display:block;font-size:9px;color:#b3a0c8;letter-spacing:1.1px}.premiumResourceBar strong{display:block;font-size:19px;font-weight:900;line-height:1.3;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.resourceUnit{font-weight:900;color:var(--lux-gold)}.premiumResourceBar button{background:linear-gradient(145deg,#754682,#32213b);border:1px solid #dfb67e;width:33px;height:33px;border-radius:50%;color:#ffe6b0;font-size:24px;line-height:25px;flex:none}
+.brand{color:#f4dd9a}.brand span{color:#e1a3ff}
+.nav{background:linear-gradient(180deg,#1c132af9,#110c19fc);border:1px solid #d6b07a75;border-bottom:0;border-radius:19px 19px 0 0;max-width:520px;box-shadow:0 -9px 25px #05030bbb,inset 0 2px #ffffff22}
+.nav button.active{border-radius:13px;background:radial-gradient(circle at 50% 15%,#a06c714b,transparent 74%),linear-gradient(#493047,#2c1c37);box-shadow:inset 0 1px #fbe0aa66,0 0 12px #ca895f2c;color:#ffdc9b}
+.nav button{padding:7px 1px}.nav small{font-size:10px}
+button.primary{color:#211021;background:linear-gradient(180deg,#ffedbd,#d9a252 54%,#ac7836);border:1px solid #ffe6ad;box-shadow:inset 0 2px #fff8,0 6px 15px #0b0613}
+button.primary:active{filter:brightness(.9)}
+/* CSS nighttime metropolis: interactive backdrop separate from UI */
+.cityMain{position:relative;isolation:isolate;overflow:hidden;min-height:308px;border:1px solid #daa96b7c;border-radius:22px;background:radial-gradient(circle at 77% 10%,#8f52af49,transparent 37%),linear-gradient(#10132b,#342048 65%,#140e20);box-shadow:0 17px 34px #000a,inset 0 1px #fff5}
+.citySky{position:absolute;inset:0;overflow:hidden}
+.moon{position:absolute;right:14%;top:25px;width:33px;height:33px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff,#d9cce9 65%,#a89ab8);box-shadow:0 0 28px #fff6,0 0 70px #bb88ff7f}
+.stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px),radial-gradient(#c59cfa 1px,transparent 2px);background-size:61px 67px,87px 79px;background-position:11px 16px,32px 47px;opacity:.52}
+.cityBuildings{position:absolute;bottom:43px;left:0;right:0;height:165px;display:flex;align-items:flex-end;justify-content:space-around;gap:3px;filter:drop-shadow(0 0 10px #b86eff66)}
+.skyscraper{width:8%;height:var(--height,70%);display:block;border:1px solid #bd8c819e;background:repeating-linear-gradient(0deg,transparent 0 9px,#efbc6d76 9px 11px,transparent 11px 13px),repeating-linear-gradient(90deg,#32264e 0 7px,#56416b 7px 12px,#2b1c39 12px 17px);box-shadow:inset 0 0 14px #8b5ecf}
+.skyscraper:nth-child(5n){--height:91%}.skyscraper:nth-child(3n){--height:62%}.skyscraper:nth-child(4n){--height:79%}.skyscraper:nth-child(7n){--height:100%}.skyscraper:nth-child(even){width:6%}
+.casinoPalace{position:absolute;bottom:37px;left:24%;width:52%;height:93px;text-align:center;padding:13px 5px 0;border-radius:55% 55% 0 0;background:linear-gradient(145deg,#a27357,#f8d083 28%,#6f436d 31%,#281b3d 72%);border:4px ridge #f1c589;box-shadow:0 0 23px #edb76d94,inset 0 0 22px #f5ba9566;color:#fff0c4;letter-spacing:1.4px;text-shadow:0 2px 5px #000;font:900 10px Georgia,serif}
+.casinoPalace .palaceCrown{display:block;font-size:21px;color:#ffdf8d;line-height:25px}
+.cityRoad{position:absolute;bottom:0;left:-20%;width:140%;height:47px;background:linear-gradient(180deg,#453a4a,#17101f);transform:perspective(90px) rotateX(21deg);box-shadow:0 -9px 24px #d096ca55}
+.cityRoad:after{content:'';position:absolute;left:50%;top:0;height:100%;width:4px;background:repeating-linear-gradient(0deg,#fee8b0 0 15px,transparent 15px 26px)}
+.cityMainBrand{position:absolute;z-index:2;top:18px;left:12px;right:12px;text-align:center;text-shadow:0 3px 13px #000,0 0 16px #211129}
+.cityMainBrand small{display:block;letter-spacing:2px;font-size:9px;color:#e0b8ea}.cityMainBrand h1{font:italic 900 clamp(32px,9vw,49px) Georgia,serif;color:#fce2a2;letter-spacing:-1.8px;margin:6px 0 0;text-shadow:0 2px #3d2637,0 0 13px #ffca86}
+.cityMainBrand h1 em{font-size:.57em;font-style:italic}.cityMainBrand>span{letter-spacing:4px;color:#f4e7d2;font-size:12px;font-family:Georgia,serif}
+.cityStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.cityStat{min-width:0;display:flex;align-items:center;gap:6px;text-align:left;border-radius:15px;border:1px solid #dbb58775;padding:12px 7px;background:linear-gradient(140deg,#44304d,#211827);box-shadow:inset 0 1px #ffffff30,0 8px 12px #0007;color:#fff}
+.cityStatIcon{font-size:26px;color:#f2cc8d;text-shadow:0 0 8px #e8bc84}
+.cityStat>div:last-child{min-width:0}.cityStat small{font-size:8px;letter-spacing:.1px;color:#d9bedc;display:block}
+.cityStat strong{display:block;font:800 16px Georgia,serif;color:#f5d398;margin:6px 0;white-space:nowrap}
+.cityStat em{display:block;font:normal 9px system-ui;color:#c4adc9}
+.cityStatProgress{width:100%;height:5px;background:#180e22;border-radius:10px;overflow:hidden}
+.cityStatProgress span{height:100%;display:block;background:linear-gradient(90deg,#a14ce4,#f2afea)}
+.cityQuickLinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:7px 0 15px}
+.cityQuickLinks button{min-width:0;display:flex;flex-direction:column;gap:3px;align-items:center;border:1px solid #cea78275;border-radius:14px;padding:11px 5px 13px;background:linear-gradient(155deg,#4a2f53,#1d1427);box-shadow:inset 0 1px #ffffff35,0 7px 12px #0006;color:#fff}
+.quickIcon{font-size:30px;font-weight:300;color:#f4cc87;filter:drop-shadow(0 0 7px #f5b77588)}
+.cityQuickLinks b{font-size:12px}.cityQuickLinks small{font-size:9px;line-height:1.3;color:#d5bbd3}
+.casinoEntrance{width:100%;min-height:97px;display:flex;align-items:center;text-align:left;gap:12px;padding:14px 13px;border-radius:25px;color:#f5d4a3;border:2px ridge #ffe3a2;background:radial-gradient(ellipse at 45% 100%,#a340d99a,transparent 75%),linear-gradient(130deg,#4d295c,#21102d 60%,#66375a);box-shadow:0 0 0 4px #e4a35023,0 14px 26px #070410aa,inset 0 1px #fff6;text-shadow:0 2px 7px #130818;margin:0 0 12px}
+.entranceChip{flex:none;display:grid;place-items:center;height:62px;width:62px;font-size:36px;color:#f5d796;border-radius:50%;background:radial-gradient(circle,#502761,#110b1e);border:5px double #f0c47e;box-shadow:0 0 17px #cc72fc8f}
+.casinoEntrance b{display:block;font:italic 800 clamp(17px,5vw,24px) Georgia,serif;line-height:1.1}.casinoEntrance small{display:block;letter-spacing:1px;font-size:9px;margin-top:7px}.entranceArrow{font-size:28px;margin-left:auto}
+.cityShopBanner{width:100%;display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:linear-gradient(100deg,#312136,#533257);color:#f4d09e;border-radius:12px;border:1px solid #e2b77f84;margin-bottom:12px}
+.cityShopBanner b{font:800 13px Georgia,serif}.cityShopBanner span{font-size:9px}
+.premiumGridHalls{gap:10px}
+.premiumHall{padding:0 0 10px!important;min-height:170px!important;border-radius:18px!important;display:flex!important;flex-direction:column;align-items:center!important;justify-content:flex-start!important;text-align:center!important;overflow:hidden;background:linear-gradient(150deg,#392141,#140d1e)!important;border:1px solid #d9a87091!important;box-shadow:0 7px 17px #0009,inset 0 1px #fff5!important}
+.hall-art{height:100px;display:grid;place-items:center;width:100%;background:radial-gradient(ellipse at 50% 75%,#b464ee70,transparent 65%),linear-gradient(#261432,#180d25);position:relative}
+.hall-art:after{content:'';position:absolute;left:10%;right:10%;bottom:8px;height:2px;background:linear-gradient(90deg,transparent,#ebca8a,transparent);box-shadow:0 0 10px #cb94ff}
+.hall-icon{height:74px;width:74px;display:grid;place-items:center;border:4px double #f0c386;border-radius:19px;color:#fee8b7;font:900 39px Georgia,serif;text-shadow:0 0 13px #eab77d;box-shadow:inset 0 0 13px #8e4ac26b,0 0 13px #b78bee7d;background:radial-gradient(circle at 50% 45%,#7c387b,#160b26)}
+.hall-slots .hall-icon{letter-spacing:-4px;font-size:35px}.hall-roulette .hall-icon,.hall-wheel .hall-icon{border-radius:50%;box-shadow:0 0 0 5px #e9b97044,inset 0 0 9px #d99d59}
+.hall-blackjack .hall-icon,.hall-poker .hall-icon{background:linear-gradient(150deg,#eee7ee,#a79bac);color:#31172f}
+.premiumHall .ico,.premiumHall .cardtag,.premiumHall small,.premiumHall .open{display:none!important}
+.premiumHall .hall-description{display:block;margin:8px 0 1px;color:#bf98c6;font-size:8px;letter-spacing:1px}
+.premiumHall b{font:italic 800 16px Georgia,serif;color:#f6d293;padding:2px 3px;letter-spacing:.3px}
+.premiumHall .hall-open{display:block;margin-top:5px;font-size:8px;letter-spacing:.5px;color:#d8b1e0}
+.casinoDistrictScene{position:relative;height:285px;overflow:hidden;border:1px solid #efcc956b;border-radius:20px;margin:10px 0 16px;background:radial-gradient(circle at 50% 100%,#9f43bc73,transparent 55%),linear-gradient(155deg,#1d1636,#302041 55%,#140c1b);box-shadow:inset 0 2px #ffffff32,0 14px 30px #0009}
+.districtArch{position:absolute;top:25px;left:9%;right:9%;height:160px;z-index:2;text-align:center;border:7px ridge #eec385;border-radius:50% 50% 0 0;background:radial-gradient(ellipse,#4c24699e,#1b0c2be3);box-shadow:0 0 0 7px #9f568a60,0 0 36px #ae60d3bb,inset 0 0 22px #b786a3}
+.districtArch span{display:block;font-size:25px;color:#fee2a3;line-height:29px}.districtArch small{display:block;font-size:10px;letter-spacing:2px;color:#d8aecc}.districtArch b{display:block;font:italic 900 36px/1 Georgia,serif;color:#ffdfa7;text-shadow:0 0 18px #febd8f;margin:4px 0}.districtArch em{font:normal 10px Georgia,serif;letter-spacing:3px;color:#efdbd1}
+.districtColumns{position:absolute;bottom:25px;left:5%;right:5%;height:120px;display:flex;justify-content:space-between}.districtColumns i{width:10%;border:3px ridge #eac394;background:repeating-linear-gradient(90deg,#795066 0 6px,#e4b88e 6px 9px,#3c2654 9px 14px);box-shadow:0 0 15px #f0b27488}
+.districtFloor{position:absolute;bottom:0;left:7%;right:7%;height:70px;background:linear-gradient(180deg,#9d6d9957,#170f24);clip-path:polygon(28% 0,72% 0,100% 100%,0 100%);box-shadow:0 0 25px #d7a9ed}
+.deluxeGameHead{text-align:center;padding:13px 10px 21px;border:1px solid #d2a36f7e;border-radius:18px;background:radial-gradient(circle at 50% 0,#994db35c,transparent 80%),linear-gradient(#2c1b3b,#120d1b);box-shadow:inset 0 1px #fff5,0 10px 20px #0006;margin:0 0 14px}
+.deluxeGameHead>small{font-size:9px;letter-spacing:2px;color:#e3bd86}
+.deluxeGameHead .ico{font-size:27px;color:#f5cf8c;margin:8px 0}
+.deluxeGameHead h1{font:italic 900 31px Georgia,serif;color:#f5d59e;text-shadow:0 0 12px #ffb47f7e}
+.deluxeGameHead p{font-size:12px}
+.royalSlotsMachine{border:4px ridge #f2c487;background:radial-gradient(circle at 50% 0,#bd72d060,transparent 50%),linear-gradient(150deg,#5b3261,#170d24 72%);box-shadow:0 0 0 3px #7f3d786b,0 18px 37px #000b,inset 0 2px #fff5}
+.royalSlotsTitle{font:italic 800 25px Georgia,serif;color:#ffdc94;text-shadow:0 1px #6e3544,0 0 13px #eec36f;margin-bottom:12px}.royalSlotsTitle b{font-size:28px}
+.slotsJackpot{border:2px ridge #e8b871;border-radius:40px;padding:10px 12px;margin:0 0 12px;background:#160b1be0;box-shadow:0 0 12px #b668d7}
+.slotsJackpot small{display:block;font-size:9px;letter-spacing:3px;color:#bb8ad4}.slotsJackpot strong{display:block;font:900 22px Georgia,serif;color:#f4cc81}
+.royalSlotsMachine .slotsReels{padding:12px 6px;gap:5px;border:4px ridge #ffd99a;background:linear-gradient(#0a0610,#342042)}
+.royalSlotsMachine .slotsReels span{height:125px;border:3px ridge #eebc73;font-size:58px;background:radial-gradient(circle at 30% 12%,#ad66b488,transparent 58%),linear-gradient(#361b46,#11091b)}
+.slotsWinDisplay{display:flex;flex-direction:column;gap:4px;background:#160b1f;border:2px ridge #cda35f;border-radius:20px;margin:15px 0 8px;padding:10px;font-size:9px;color:#d1a5c9;letter-spacing:1px}
+.slotsWinDisplay strong{color:#ffe5aa;font:900 23px Georgia,serif;letter-spacing:0}
+.spinAction button{display:block;width:80%;margin:12px auto 16px;min-height:62px;border-radius:34px;font:900 18px Georgia,serif;box-shadow:0 0 0 4px #a0599b55,inset 0 2px #fff8,0 0 19px #bb65e59c}
+.deluxeBlackjack{position:relative;background:radial-gradient(ellipse at 50% 90%,#175840,#0c241d 78%);border:5px ridge #e0ab6b;border-radius:48% 48% 22px 22px/23% 23% 22px 22px;margin-top:0;box-shadow:0 0 0 3px #593256,0 15px 30px #000a;overflow:hidden}
+.dealerStage{position:relative;height:120px;margin:-8px -10px 14px;background:linear-gradient(to top,#165444,#22132e 37%,#53315b);border-bottom:3px ridge #d6a675}
+.dealerSilhouette{position:absolute;bottom:0;left:calc(50% - 52px);width:104px;height:104px}
+.dealerHead{position:absolute;left:37px;top:5px;width:34px;height:39px;border-radius:44% 44% 42% 42%;background:linear-gradient(120deg,#d4a375,#fce0a9 60%,#bb7a64);box-shadow:0 0 0 9px #2d1c2b}
+.dealerBody{position:absolute;bottom:-3px;left:0;width:104px;height:70px;border-radius:52px 52px 0 0;background:linear-gradient(85deg,#f6ebdf 0 26%,#291b2b 27% 73%,#f0e0d3 74%);border:2px solid #d19d7b}
+.dealerTitle{position:absolute;bottom:9px;right:8px;color:#e4ca9a;font:800 8px Georgia,serif;letter-spacing:1px}
+.deluxeBlackjack .casinoCaption{border-bottom:1px solid #e4d7a655;padding-bottom:10px}
+.deluxeBlackjack .cardRow{min-height:116px}.deluxeBlackjack .casinoCard{transform:rotate(-2deg)}
+.blackjackActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}.blackjackActions button{min-height:57px;border-radius:16px;border:1px solid #e6ba81;font:900 14px Georgia,serif}.blackjackActions button:first-child:last-child{grid-column:span 2}
+.shopHero{background:radial-gradient(circle at 80% 5%,#d6a55c69,transparent 52%),radial-gradient(circle at 4% 70%,#9434b599,transparent 49%),linear-gradient(130deg,#3e254b,#180f22)}
+.shopHero h1{font:italic 900 33px Georgia,serif;text-shadow:0 0 17px #e7a573a6}
+.skinCard,.premiumItem{border:1px solid #e5b78483;box-shadow:inset 0 1px #fff5,0 8px 22px #0008}
+.skinGraphic{box-shadow:inset 0 0 22px #0007,0 3px 13px #bc7fed44;border:2px ridge #eecb939d}
+.premiumItem strong{font:italic 800 17px Georgia,serif;color:#ffe1a9}
+.premiumItem .subtitle{color:#c99ad5;letter-spacing:2px;font-size:9px}
+.comingSoon{border:1px solid #ae835d77;border-radius:9px;background:#251925;padding:9px 4px;text-align:center;color:#dac6c4}
+@media(min-width:700px){.app{max-width:620px}.nav{max-width:620px}.cityMain{height:370px}.casinoDistrictScene{height:350px}}
+@media(max-width:360px){.premiumTop{grid-template-columns:47px 1fr 35px;gap:6px}.premiumAvatar{height:45px;width:45px}.premiumIdentity small{font-size:7px}.premiumResourceBar strong{font-size:16px}.cityMainBrand h1{font-size:31px}.cityStatIcon{font-size:19px}.cityStat strong{font-size:14px}.entranceChip{height:46px;width:46px;font-size:26px}.casinoEntrance b{font-size:18px}.cityQuickLinks b{font-size:10px}.hall-icon{width:62px;height:62px}.premiumHall b{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.citySky *,.casinoDistrictScene *, .casinoCard,.premiumHall{animation:none!important;transition:none!important}}
 </style><script src="/sdk.js"></script></head>
 <body><div class="app" id="app"></div><script>
 (async function(){
