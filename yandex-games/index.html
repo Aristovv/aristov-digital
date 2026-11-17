@@ -281,8 +281,11 @@ body{font-family:Inter,Manrope,system-ui,-apple-system,sans-serif;background:rad
 .empireBuilding .buildingNumber{font-variant-numeric:tabular-nums}
 
 /* Yandex Games iframe layout: offline assets + guest play */
-html,body{overscroll-behavior:none;touch-action:pan-y}
+html,body{height:100%;width:100%;overflow:hidden;overscroll-behavior:none;touch-action:pan-y}
 body{-webkit-user-select:none;user-select:none}
+.app{height:100vh;height:100dvh;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.app::-webkit-scrollbar{display:none}
+.app:focus{outline:none}
 input,textarea{-webkit-user-select:text;user-select:text}
 .demo>div{min-width:0}.demo button{flex:none}
 @media(min-width:700px){.app{max-width:min(780px,95vw)}.nav{width:min(780px,95vw)}}
