@@ -132,6 +132,63 @@ html{-webkit-text-size-adjust:100%}body{background:radial-gradient(ellipse at 50
 .modeStats>div>span{font-size:23px}
 .modeStats>div strong{font-size:23px;color:#f9dfa7}
 .modeStats>div small{font-size:11px;color:#b6a3cd}
+
+/* REALISM 1.2 — photographic night city + brushed glass interfaces */
+body{font-family:Inter,Manrope,system-ui,-apple-system,sans-serif;background:radial-gradient(ellipse at 50% -10%,#281942 0%,#100d1b 52%,#08070e 92%)}
+.app{max-width:530px;padding:calc(14px + env(safe-area-inset-top,0px)*.2) 16px calc(114px + env(safe-area-inset-bottom,0px))}
+.brand{font-size:24px;letter-spacing:1.4px;text-shadow:0 0 18px #a076ff52}
+.brand span{color:#eaca89}
+.wallet{border-radius:23px;background:linear-gradient(120deg,rgba(52,39,70,.98),rgba(19,17,32,.97));border:1px solid #dec49a4d;box-shadow:inset 0 1px #fff3,0 14px 44px #0007}
+.wallet:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(150deg,#fff2,transparent 48%);opacity:.35}
+.wallet .lvl strong,.wallet em{color:#e9c98c}
+.hero.deluxe{min-height:330px;background:linear-gradient(95deg,rgba(10,8,19,.94),rgba(17,11,31,.65) 60%,rgba(9,7,15,.12)),linear-gradient(0deg,rgba(12,8,26,.72),transparent 57%),url("https://images.unsplash.com/photo-1770773757363-87647c07fe6c?auto=format&fit=crop&w=1000&q=80") center 53% / cover no-repeat,#181326;border:1px solid #e1c9a33b;box-shadow:inset 0 1px #fff4,0 20px 44px #0009}
+.hero.deluxe:before{background:linear-gradient(180deg,transparent 45%,rgba(5,5,12,.67) 100%)}
+.hero.deluxe h1{font-size:clamp(32px,9vw,40px);letter-spacing:-1.2px;text-shadow:0 4px 18px #000}
+.hero.deluxe h1 span{color:#e9c98f}
+.hero.deluxe p{max-width:280px;color:#e8dfed;text-shadow:0 2px 9px #000}
+.cityscape{opacity:.09;filter:blur(8px)}
+.citymoon{display:none}
+.mode{min-height:190px;border-radius:22px;box-shadow:inset 0 1px #ffffff30,0 14px 30px #0004;border:1px solid #d4bfa638}
+.mode:before{border-color:#f3e2be38;opacity:.5}
+.mode .ico{width:50px;height:50px;display:grid;place-items:center;padding:11px;background:linear-gradient(145deg,#fff2,#fff1);border:1px solid #ffffff26;box-shadow:inset 0 1px #fff3,0 8px 16px #0004;filter:none}
+.mode:nth-child(1){background:radial-gradient(circle at 95% 10%,#7950a68c,transparent 65%),linear-gradient(145deg,#342443,#15101f)}
+.mode:nth-child(2){background:radial-gradient(circle at 95% 10%,#397c7970,transparent 65%),linear-gradient(145deg,#1d3a37,#101720)}
+.mode:nth-child(3){background:radial-gradient(circle at 95% 10%,#aa698170,transparent 65%),linear-gradient(145deg,#48273c,#160f1b)}
+.mode:nth-child(4){background:radial-gradient(circle at 95% 10%,#9f7b4c75,transparent 65%),linear-gradient(145deg,#4b342d,#191218)}
+.mode b{font-size:17px;letter-spacing:.4px}
+.cardtag{background:#09081288;border:1px solid #ffffff2b;color:#f3e6fa;backdrop-filter:blur(8px)}
+.demo{border:1px solid #c9ad8666;border-radius:15px;background:linear-gradient(120deg,#302139,#191623)}
+.demo strong{color:#e7c991}
+.panel,.board,.stake,.clubHero,.questHero,.modeStats>div{border-color:#d1b98f32;box-shadow:inset 0 1px #ffffff17,0 11px 25px #0004}
+.panel{background:linear-gradient(145deg,#2e243a,#15131c)}
+.nav{background:linear-gradient(180deg,#1e1929f8,#0d0c16f8);border-top:1px solid #dec69738}
+.nav button.active{color:#f4d79c}
+.primary,.daily button,.panel button{background:linear-gradient(145deg,#f9dfae,#bf9256);color:#201526;box-shadow:inset 0 1px #fff8,0 10px 24px #0005}
+.primary:active,.mode:active{transform:scale(.98)}
+.modehead .ico{width:65px;height:65px;display:grid;place-items:center;margin:0 auto;border-radius:18px;background:linear-gradient(140deg,#47335e,#1c152b);border:1px solid #e2c79a44;filter:none}
+.modehead .ico .ui-icon{width:35px;height:35px}
+.bin.hit,.plinko .bins span.hit{background:linear-gradient(140deg,#f8deac,#c69558)}
+.plinkoBoard,.plinko{background:radial-gradient(circle at 50% 0%,#55427433,transparent 48%),linear-gradient(155deg,#251b36,#110e1a);border-radius:14px;padding:8px}
+.pins i,.pins span{background:radial-gradient(circle at 30% 20%,#f4f1ff,#7d758c);box-shadow:inset 0 1px #fff6,0 1px 4px #0009,0 0 8px #dbb5ff5c}
+.plinko .bins span{background:linear-gradient(140deg,#4e3b69,#221929);border:1px solid #ffffff1e}
+.cell{border:1px solid #ffffff2b;background:linear-gradient(145deg,#59476c,#31253e);box-shadow:inset 0 1px #fff3,0 5px 8px #0004}
+.cell.safe{background:linear-gradient(140deg,#3e897d,#1e534d)}
+.crashDeluxe{background:radial-gradient(ellipse at 50% 85%,#533b7b,#0f0d17 80%)}
+.crashGraph path.line{stroke:#f4d69b}
+.wheel{border:9px solid #e9c988;box-shadow:0 0 0 6px #493948,0 20px 38px #0007,inset 0 0 24px #120d1b}
+.wheelPrize{color:#fff5df}
+.streakFire{filter:none}
+.ui-icon{width:1.1em;height:1.1em;display:inline-flex;align-items:center;justify-content:center;vertical-align:-.14em;flex:none;color:currentColor}
+.ui-icon svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ui-icon.large{width:32px;height:32px;vertical-align:middle}
+.mode .ico .ui-icon{width:30px;height:30px;color:#e2c6ff}
+.demo .ui-icon,.badge .ui-icon{width:16px;height:16px}
+.wallet .ui-icon{color:#eacd92}
+.streakFire .ui-icon{width:40px;height:40px;color:#e2ad71}
+.nav .ui-icon{width:24px;height:24px}
+.stake .ui-icon{color:#e1bf85}
+.minibadge .ui-icon{width:24px;height:24px}
+@media(prefers-reduced-motion:reduce){.cityscape:after,.ball.deluxeBall,.wheel.slotSpin,.cell.safe,.cell.bad,.result{animation:none!important}}
 </style></head>
 <body><div class="app" id="app"></div><script>
 (function(){
