@@ -322,6 +322,44 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
 .lcSeason,.lcSettings{margin:15px 0;padding:15px}.lcSeason>strong{color:#f0ca86}.lcSeasonGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.lcSeasonGrid button{border:1px solid #9e7b9e;border-radius:13px;padding:12px 5px;background:linear-gradient(#493157,#271a31);color:#efcfab;font-size:11px}.lcSeasonGrid button small{display:block;color:#c7add0}.lcSettings .row{flex-wrap:wrap}.lcSettings button{font-size:10px}.reduced-effects *, .reduced-effects *::before,.reduced-effects *::after{animation:none!important;transition:none!important}
 .wheel3d{border:12px ridge #f6d59c!important;transform-style:preserve-3d;box-shadow:inset 0 0 0 8px #f2c27a88,inset 0 0 25px #000c,0 0 0 7px #3c2449,0 18px 33px #000c!important}.wheel-wrap{perspective:900px;background:radial-gradient(ellipse at 50% 50%,#53356691,#180e21)!important}.wheel3d .center{border:5px ridge #ebc387;box-shadow:0 9px 18px #100a1599}.wheel-pointer{filter:drop-shadow(0 3px 5px #000)}
 .crashAutoPanel>.crashPresets{margin-top:9px}.bjHand{border-radius:15px;padding:6px;margin:7px 0;border:1px solid transparent}.bjHand.active{border-color:#d8b17c;box-shadow:0 0 14px #dcac6688}.bjHand p{color:#eac894;font-weight:800}.v2-blackjack-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.v2-blackjack-actions button{min-height:49px}.v2-blackjack-actions button:only-child{grid-column:span 2}
+
+/* v2.3.2 — real-gameplay visual refinement (mobile-first, composited transforms) */
+.newCrashBoard{border:2px solid #bc9360!important;border-radius:24px!important;background:radial-gradient(ellipse at 46% 5%,#45325c,#16101f 70%)!important;box-shadow:inset 0 1px #ffebb955,0 18px 40px #05020aa0!important;padding:15px!important}
+.crashLiveStage{position:relative;min-height:300px!important;border:1px solid #c4a17290!important;border-radius:18px!important;background:radial-gradient(ellipse at 70% 86%,#713c8c45,transparent 57%),linear-gradient(180deg,#18162f,#0b0d1b 85%)!important;box-shadow:inset 0 4px 17px #000b!important;overflow:hidden}
+.crashLiveStage:before{content:'';pointer-events:none;position:absolute;inset:0;background-image:linear-gradient(0deg,transparent 94%,#f7d4a010 95%),linear-gradient(90deg,transparent 94%,#f7d4a010 95%);background-size:38px 38px;opacity:.7}
+.crashLiveStage svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 7px #a967ff)}
+.crashLiveHUD{position:absolute!important;top:16px!important;left:0!important;right:0!important;text-align:center!important;z-index:2!important;pointer-events:none}
+.crashLiveHUD small{font-size:10px!important;letter-spacing:2px!important;color:#d9b7ef!important}
+.crashLiveHUD strong{display:block!important;font:italic 900 clamp(36px,11vw,53px) Georgia,serif!important;color:#ffe2a2!important;text-shadow:0 0 16px #cc71e7,0 3px 5px #000!important}
+.crashLiveHUD span{color:#e5d3ed!important;font-size:11px!important}
+.crashLiveRocket{z-index:1!important;filter:drop-shadow(0 0 9px #e9b469);transition:top .09s linear,left .09s linear}
+.crashAutoPanel{border:1px solid #ac8457aa!important;border-radius:16px!important;background:linear-gradient(140deg,#36223f,#1b1329)!important;box-shadow:inset 0 1px #ffffff29!important;margin:12px 0!important;padding:14px!important}
+.crashAutoValue strong{font-size:29px!important;text-shadow:0 0 13px #d79f6b99}
+.crashAutoValue button{border:1px solid #dcb586!important;background:linear-gradient(145deg,#77477f,#321c3d)!important}
+.crashSwitch.on{box-shadow:inset 0 1px #fff5,0 0 14px #b879e665}
+.crashHistory span{border:1px solid #8b6d88!important;border-radius:16px!important;background:linear-gradient(#3e2c4c,#211729)!important;padding:7px 11px!important}
+.crashHistory span.won{color:#ffe5ad!important;border-color:#deb272!important}
+.roulette3d-stage{padding:21px 8px 17px!important;background:radial-gradient(ellipse at center,#70468d61,transparent 71%),linear-gradient(135deg,#28182e,#130c1c)!important;border:1px solid #cba4748c!important;box-shadow:inset 0 2px #ffffff27,0 14px 25px #0008;border-radius:22px!important}
+.roulette3d-wheel{width:265px!important;height:265px!important;max-width:78vw;max-height:78vw;border:13px ridge #e4c38b!important;box-shadow:0 0 0 8px #4c283c,0 15px 30px #000c,inset 0 0 0 11px #6c4557,inset 0 0 18px 15px #0007!important;will-change:transform;transform-style:preserve-3d}
+.roulette3d-num{position:absolute;top:50%;left:50%;height:19px;min-width:9px;color:#fff3df;font:800 8px Georgia,serif;line-height:18px;text-shadow:0 1px 2px #000,0 0 4px #000;z-index:4;pointer-events:none}
+.roulette3d-rotor{border:9px ridge #f3d299!important;background:radial-gradient(circle at 20% 10%,#ffde98,#936b4f 40%,#3d2438 75%)!important;box-shadow:inset 0 2px 8px #000a,0 0 15px #0008!important}
+.roulette3d-ball{z-index:8;background:radial-gradient(circle at 24% 19%,#fff,#c1cad4 50%,#8a939a)!important;box-shadow:0 0 10px #fff9,0 3px 5px #000b!important}
+.roulette3d-wheel.rotating{animation:wheel3dRoll 3.2s cubic-bezier(.16,.66,.18,1) forwards!important}
+@keyframes wheel3dRoll{from{transform:perspective(480px) rotateX(23deg) rotate(0deg)}to{transform:perspective(480px) rotateX(23deg) rotate(var(--wheel-angle,2160deg))}}
+.roulette3d-bets{background:radial-gradient(ellipse at 50% 2%,#2e7864,#083429 90%)!important;border:4px ridge #deb985!important;box-shadow:0 12px 26px #0008,inset 0 0 19px #0008!important}
+.roulette3d-bets button{border:1px solid #f5e1bb6b!important;border-radius:4px!important;box-shadow:inset 0 1px #fff3!important}
+.roulette3d-chips{justify-content:center;padding:10px;border-radius:15px;background:#25182d;border:1px solid #a8836790}
+.roulette3d-chip{box-shadow:inset 0 1px #fff8,0 4px 6px #0008;transform:perspective(200px) rotateX(15deg)}
+.roulette3d-chip.active{outline:2px solid #ffda99;outline-offset:3px}
+.slot3d-shell{background:radial-gradient(ellipse at 50% 0,#9b4fb18a,transparent 48%),linear-gradient(140deg,#452853,#150f23)!important;box-shadow:inset 0 3px #fff6,0 16px 29px #000b,0 0 19px #c884ed66!important}
+.slot3d-reels{border:5px ridge #f8d294!important;box-shadow:inset 0 8px 18px #000a,0 4px 12px #0b0715}
+.slot3d-reel{border-color:#dbb781!important}
+.slot3d-symbol{box-shadow:inset 0 3px 10px #ffffff26,inset 0 -10px 17px #09051899;color:#ffe1ad!important}
+.v2-blackjack .v2-dealer-art{filter:contrast(1.08) saturate(1.07)}
+.v2-cards{perspective:650px}
+.v2-card{backface-visibility:hidden;box-shadow:2px 8px 13px #0009!important}
+@media(max-width:390px){.roulette3d-wheel{width:225px!important;height:225px!important}.roulette3d-num{font-size:7px;transform-origin:center}.crashLiveStage{min-height:250px!important}}
+@media(prefers-reduced-motion:reduce){.roulette3d-wheel.rotating{animation:none!important}.crashLiveRocket{transition:none!important}}
 </style>
   <script src="/sdk.js"></script>
 </head>
@@ -410,6 +448,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       quests: {date: day(), rounds: 0, modes: [], claimed: []},
       modeStats: {plinko:0,mines:0,crash:0,wheel:0,slots:0,roulette:0,blackjack:0,poker:0},
       slotsLast: null, rouletteLast:null, blackjack:null, poker:null, lastBlackjack:null, lastPoker:null, lastCasinoResult:null, ownedSkins:['classic'], shopSkin:'classic',
+      crashHistory:[],rouletteHistory:[],slotHistory:[],slotsFree:0,crashStats:{rounds:0,wins:0,spent:0,paid:0},collectibles:[],cityPrestige:0,season:{xp:0,claimed:[]},settings:{sound:true,reducedMotion:false},
       club: null,
       buildings: {neon:0,fort:0,tower:0,crown:0},
       districtDay: null,
@@ -428,6 +467,23 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         st.modeStats = Object.assign(fresh().modeStats, st.modeStats || {});
         st.history = Array.isArray(st.history) ? st.history : [];
         st.achievements = Array.isArray(st.achievements) ? st.achievements : [];
+        // Every build must accept saves created by earlier versions. Do NOT reset
+        // coins, districts or collections just because a new history field was added.
+        for(const key of ['crashHistory','rouletteHistory','slotHistory','collectibles']){
+          st[key] = Array.isArray(st[key]) ? st[key] : [];
+        }
+        st.crashHistory=st.crashHistory.filter(x=>x&&Number.isFinite(x.point)&&Number.isFinite(x.paid)).slice(0,20);
+        st.rouletteHistory=st.rouletteHistory.filter(x=>Number.isSafeInteger(x)&&x>=0&&x<=36).slice(0,20);
+        st.slotHistory=st.slotHistory.filter(x=>x&&Number.isFinite(x.payout)).slice(0,12);
+        const stats=st.crashStats&&typeof st.crashStats==='object'?st.crashStats:{};
+        st.crashStats={rounds:Math.max(0,Number(stats.rounds)||0),wins:Math.max(0,Number(stats.wins)||0),spent:Math.max(0,Number(stats.spent)||0),paid:Math.max(0,Number(stats.paid)||0)};
+        if(!Number.isSafeInteger(st.slotsFree)||st.slotsFree<0)st.slotsFree=0;
+        if(!st.settings||typeof st.settings!=='object')st.settings={sound:true,reducedMotion:false};
+        if(!st.season||typeof st.season!=='object')st.season={xp:0,claimed:[]};
+        if(!Array.isArray(st.season.claimed))st.season.claimed=[];
+        if(!st.quests||typeof st.quests!=='object')st.quests=fresh().quests;
+        if(!Array.isArray(st.quests.modes))st.quests.modes=[];
+        if(!Array.isArray(st.quests.claimed))st.quests.claimed=[];
         st.buildings = Object.assign(fresh().buildings,st.buildings||{});
         for(const key of Object.keys(st.buildings)){
           const n=st.buildings[key];st.buildings[key]=Number.isInteger(n)&&n>=0&&n<=5?n:0;
@@ -708,7 +764,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       state.crash=null;cancelAnimationFrame(crashTicker);crashTicker=null;
       const paid=kind==='cash'?Math.floor(g.stake*mult):0;
       if(paid)change(paid,'Crash · '+(g.autoEnabled?'автовывод':'кэшаут')+' ×'+mult.toFixed(2));
-      state.crashHistory.unshift({point:g.point,paid,stake:g.stake,at:Date.now(),auto:!!g.autoEnabled});
+      if(!Array.isArray(state.crashHistory))state.crashHistory=[];state.crashHistory.unshift({point:g.point,paid,stake:g.stake,at:Date.now(),auto:!!g.autoEnabled});
       state.crashHistory=state.crashHistory.slice(0,20);
       state.crashStats.rounds++;state.crashStats.spent+=g.stake;
       if(paid){state.crashStats.wins++;state.crashStats.paid+=paid;}
@@ -1009,12 +1065,14 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const payout=result.payout;
       if(payout)change(payout,'Royal Slots · '+result.lines.length+' линий');
       addRound('slots');state.lastCasinoResult={mode:'slots',label:result.lines.length+' выигрышных линий',payout};
-      state.slotHistory.unshift({bet:price,payout,lines:result.lines.length,free:result.free});state.slotHistory=state.slotHistory.slice(0,12);
+      if(!Array.isArray(state.slotHistory))state.slotHistory=[];state.slotHistory.unshift({bet:price,payout,lines:result.lines.length,free:result.free});state.slotHistory=state.slotHistory.slice(0,12);
       save();slotsSpinning=true;render();
       setTimeout(()=>{slotsSpinning=false;if(screen==='mode'&&currentMode==='slots')render();},reduceEffects?120:1550);
     }
     const EUROPEAN_WHEEL=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
     function rouletteColor(n){return n===0?'green':ROULETTE_RED.includes(n)?'red':'black';}
+    function rouletteWheelAngle(n){const i=EUROPEAN_WHEEL.indexOf(n);return i<0?0:-((i+.5)*360/EUROPEAN_WHEEL.length);}
+    function rouletteNumbersHTML(){return EUROPEAN_WHEEL.map((n,i)=>{const a=(i+.5)*360/37;return `<span class="roulette3d-num" style="transform:translate(-50%,-50%) rotate(${a}deg) translateY(-109px) rotate(${-a}deg)">${n}</span>`;}).join('');}
     function rouletteBetWins(id,n){
       if(id==='red'||id==='black')return n>0&&rouletteColor(n)===id?2:0;
       if(id==='even')return n>0&&n%2===0?2:0;
@@ -1036,7 +1094,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const n=EUROPEAN_WHEEL[Math.floor(Math.random()*37)];
       const payout=rouletteBets.reduce((a,b)=>a+b.amount*rouletteBetWins(b.id,n),0);
       if(payout)change(payout,'Roulette · номер '+n);
-      addRound('roulette');state.rouletteLast=n;state.rouletteHistory.unshift(n);state.rouletteHistory=state.rouletteHistory.slice(0,20);
+      addRound('roulette');state.rouletteLast=n;if(!Array.isArray(state.rouletteHistory))state.rouletteHistory=[];state.rouletteHistory.unshift(n);state.rouletteHistory=state.rouletteHistory.slice(0,20);
       state.lastRouletteBets=rouletteBets.slice();state.lastCasinoResult={mode:'roulette',label:'Число '+n+' · '+rouletteColor(n),payout};rouletteBets=[];
       save();rouletteSpinning=true;render();setTimeout(()=>{rouletteSpinning=false;if(currentMode==='roulette'&&screen==='mode')render();},reduceEffects?120:3200);
     }
@@ -1104,8 +1162,9 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       }
       if(game==='roulette'){
         const total=rouletteBets.reduce((a,b)=>a+b.amount,0),n=state.rouletteLast;
+        const landingAngle=rouletteWheelAngle(n);
         const sectorCss=EUROPEAN_WHEEL.map((v,i)=>`${rouletteColor(v)==='red'?'#aa394b':rouletteColor(v)==='green'?'#22875d':'#231b2c'} ${i*360/37}deg ${(i+1)*360/37}deg`).join(',');
-        h+=`<div class="roulette3d-stage"><div class="roulette3d-wheel ${rouletteSpinning?'rotating':''}" style="background:conic-gradient(${sectorCss})"><div class="roulette3d-rotor"><span>${Number.isInteger(n)?n:'◆'}</span></div></div><div class="roulette3d-ball ${rouletteSpinning?'rotating':''}"></div><p>Европейская рулетка · 0–36 · история ${state.rouletteHistory.slice(0,10).map(x=>`<em class="hit-${rouletteColor(x)}">${x}</em>`).join(' ')}</p></div>
+        h+=`<div class="roulette3d-stage"><div class="roulette3d-wheel ${rouletteSpinning?'rotating':''}" style="background:conic-gradient(${sectorCss});--wheel-angle:${(2160+landingAngle).toFixed(2)}deg;transform:perspective(480px) rotateX(23deg) rotate(${landingAngle.toFixed(2)}deg)">${rouletteNumbersHTML()}<div class="roulette3d-rotor"><span>${Number.isInteger(n)?n:'◆'}</span></div></div><div class="roulette3d-ball ${rouletteSpinning?'rotating':''}"></div><p>Европейская рулетка · 0–36 · история ${(Array.isArray(state.rouletteHistory)?state.rouletteHistory:[]).slice(0,10).map(x=>`<em class="hit-${rouletteColor(x)}">${x}</em>`).join(' ')}</p></div>
         <div class="roulette3d-chips"><small>НОМИНАЛ ФИШКИ</small>${[10,25,50,100,200].map(x=>`<button class="roulette3d-chip ${rouletteChip===x?'active':''}" data-action="roulette-chip" data-value="${x}" ${rouletteSpinning?'disabled':''}>${x}</button>`).join('')}</div>
         <div class="roulette3d-bets"><button class="green" data-action="roulette-add" data-value="num:0">0</button><div class="roulette3d-numbers">${Array.from({length:36},(_,i)=>i+1).map(x=>`<button class="${rouletteColor(x)}" data-action="roulette-add" data-value="num:${x}">${x}</button>`).join('')}</div><div class="roulette3d-outer">${[['red','Красное ×2'],['black','Чёрное ×2'],['even','Чёт ×2'],['odd','Нечёт ×2'],['low','1–18'],['high','19–36'],['dozen:1','1-я дюжина'],['dozen:2','2-я дюжина'],['dozen:3','3-я дюжина'],['column:1','1-й столбец'],['column:2','2-й столбец'],['column:3','3-й столбец']].map(([id,label])=>`<button data-action="roulette-add" data-value="${id}">${label}</button>`).join('')}</div></div>
         <div class="row roulette3d-summary"><span>Фишки на столе: <strong>${money(total)} LC</strong></span><button class="action secondary" data-action="roulette-clear" ${rouletteSpinning?'disabled':''}>Очистить</button></div><button class="action primary full" data-action="roulette-spin" ${rouletteSpinning||!total?'disabled':''}>${rouletteSpinning?'КОЛЕСО ВРАЩАЕТСЯ':'КРУТИТЬ · '+money(total)+' LC'}</button>
@@ -1171,7 +1230,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         const active=!!state.crash,stats=state.crashStats;
         body+=`<div class="glass play-area crash-board newCrashBoard">
           <div class="crashLiveStage"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="smoothCrash" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#9e74ff"/><stop offset="1" stop-color="#f5cf8a"/></linearGradient></defs><path id="crashSmoothArea" fill="rgba(167,124,255,.18)" d="M8 91 Z"></path><path id="crashSmoothLine" stroke="url(#smoothCrash)" stroke-width="2.2" stroke-linecap="round" fill="none" d="M8 91"></path></svg><div id="crashSmoothRocket" class="crashLiveRocket" style="left:8%;top:91%">${icon('rocket')}</div><div class="crashLiveHUD"><small>CRASH · ВИРТУАЛЬНЫЕ LC</small><strong id="crashLiveMult">×${active?crashDisplay.toFixed(2):'1.00'}</strong><span id="crashLivePayout">${active?'Текущая выплата: '+money(Math.floor(state.crash.stake*crashDisplay))+' LC':'Настрой автовывод перед стартом'}</span></div></div>
-          <div class="crashHistory">${state.crashHistory.slice(0,9).map(h=>`<span class="${h.paid?'won':'lost'}">×${h.point.toFixed(2)}</span>`).join('')||'<small>История появится после первого раунда</small>'}</div>
+          <div class="crashHistory" aria-label="История прошлых раундов">${(Array.isArray(state.crashHistory)?state.crashHistory:[]).slice(0,9).filter(h=>h&&Number.isFinite(h.point)).map(h=>`<span class="${h.paid?'won':'lost'}">×${h.point.toFixed(2)}</span>`).join('')||'<small>История появится после первого раунда</small>'}</div>
           <div class="section-title"><h3>Ставка · LC</h3><small>только виртуальные очки</small></div><div class="stakes">${options.map(v=>`<button class="stake ${stake===v?'on':''}" data-action="stake" data-value="${v}" ${active?'disabled':''}>${money(v)}</button>`).join('')}</div>
           <div class="crashAutoPanel"><div class="row"><div><strong>Автовывод</strong><small>при достижении заданного множителя</small></div><button class="crashSwitch ${crashAutoEnabled?'on':''}" aria-pressed="${crashAutoEnabled}" data-action="crash-auto" data-value="${crashAutoEnabled?'off':'on'}" ${active?'disabled':''}>${crashAutoEnabled?'ВКЛ':'ВЫКЛ'}</button></div>
           <div class="crashAutoValue"><button data-action="crash-target" data-value="${(crashAutoTarget-.1).toFixed(2)}" ${active||!crashAutoEnabled||crashAutoTarget<=1.1?'disabled':''}>−</button><strong>×${crashAutoTarget.toFixed(2)}</strong><button data-action="crash-target" data-value="${(crashAutoTarget+.1).toFixed(2)}" ${active||!crashAutoEnabled||crashAutoTarget>=100?'disabled':''}>+</button></div>
