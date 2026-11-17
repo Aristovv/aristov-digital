@@ -113,6 +113,25 @@ html{-webkit-text-size-adjust:100%}body{background:radial-gradient(ellipse at 50
 .subtitle{font-size:11px;color:#e0be7f;letter-spacing:1.6px;font-weight:900}
 @media(max-width:365px){.app{padding-left:12px;padding-right:12px}.hero.deluxe h1{font-size:29px}.mode{padding:13px}.mode b{font-size:15px}.nav small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.cityscape:after,.ball.deluxeBall,.wheel.slotSpin,.cell.safe,.cell.bad,.result{animation:none!important}}
+
+/* DELUXE 1.1 progression */
+.streakPanel{background:radial-gradient(circle at 100% 0,#8b4b6b66,transparent 55%),linear-gradient(120deg,#362342,#20172d);border-color:#a47074}
+.streakTitle{font-size:24px!important;display:block;margin:8px 0 3px;color:#ffe2a6}
+.streakFire{font-size:42px;filter:drop-shadow(0 0 15px #f29257)}
+.streakDays{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:13px}
+.streakDays span{border:1px solid #664a69;background:#291c35;border-radius:10px;padding:10px 0;text-align:center;font-size:12px;font-weight:800;color:#a899b8}
+.streakDays span.claimed{background:linear-gradient(145deg,#a65e54,#ebb96f);border-color:#ffd4a3;color:#30162d;box-shadow:0 0 16px #da936966}
+.questHero{padding:20px;background:radial-gradient(circle at 100% 100%,#7143ac66,#28183e 65%);border-color:#986dc7}
+.questHero h2{font-size:24px;margin:11px 0 8px}
+.questHero .levelProgress{margin-bottom:11px}
+.questCard{padding:16px 14px}
+.questCard .levelProgress{margin-top:15px;height:7px}
+.questCard .panel-row button{min-width:91px}
+.modeStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.modeStats>div{border:1px solid #644783;background:linear-gradient(135deg,#302041,#1a1228);border-radius:16px;min-height:106px;padding:14px;display:flex;flex-direction:column;gap:3px}
+.modeStats>div>span{font-size:23px}
+.modeStats>div strong{font-size:23px;color:#f9dfa7}
+.modeStats>div small{font-size:11px;color:#b6a3cd}
 </style></head>
 <body><div class="app" id="app"></div><script>
 (function(){
