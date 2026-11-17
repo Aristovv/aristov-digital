@@ -24,6 +24,11 @@ jobs:
           assert 'lucky_city_yandex_v1' in html, 'Missing dedicated save key'
           assert 'getData' in html and 'setData' in html, 'Missing player cloud save'
           assert '<title>Lucky City</title>' in html, 'Unexpected game title'
+          # Regression: old Yandex saves lacked these 2.3 history fields.
+          assert "for(const key of ['crashHistory','rouletteHistory','slotHistory','collectibles'])" in html, 'Legacy save migration removed'
+          assert 'rouletteNumbersHTML' in html, 'Roulette 37-pocket visual was removed'
+          assert "(Array.isArray(state.crashHistory)?state.crashHistory:[])" in html, 'Crash history display protection removed'
+          assert "(Array.isArray(state.rouletteHistory)?state.rouletteHistory:[])" in html, 'Roulette history display protection removed'
           script = re.search(r'<script>([\s\S]*?)</script>', html)
           assert script, 'Missing app script'
           Path('/tmp/lucky-yandex-app.js').write_text(script.group(1), encoding='utf-8')
