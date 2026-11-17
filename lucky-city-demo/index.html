@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#110a20"><meta name="robots" content="noindex,nofollow"><title>LUCKY CITY — браузерная демоверсия</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Arial;color:#f8f2ff;background:#090713}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#301b4b 0%,#140d21 38%,#090713 85%);min-height:100vh}
+button{font:inherit;cursor:pointer;border:0;color:inherit}button:disabled{opacity:.38;cursor:not-allowed}input{font:inherit}
+.app{max-width:520px;margin:auto;padding:15px 16px 110px;min-height:100dvh}
+.demo{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(120deg,#5d3789,#302048);border:1px solid #b98cf1;border-radius:14px;padding:10px 12px;margin-bottom:18px}
+.demo strong{font-size:11px;color:#ffe0a4;letter-spacing:1px}.demo small{display:block;font-size:10px;color:#e2d0ef;margin-top:3px}
+.demo button,.ghost{border:1px solid #9777b3;border-radius:10px;padding:8px 12px;background:#251532;font-size:11px;font-weight:800}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{font-weight:900;font-size:25px;letter-spacing:1px}.brand span{color:#e2bd71}.sub{font-size:10px;letter-spacing:2px;color:#a78cbc;margin-top:4px}.avatar{width:47px;height:47px;border-radius:15px;background:#29183d;border:1px solid #6f4c91;font-size:24px}
+.wallet{border:1px solid #684583;background:linear-gradient(120deg,#321c52,#1d1533);border-radius:20px;padding:18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;box-shadow:0 12px 34px #05040c66}
+.wallet small{display:block;color:#baa1d0;font-size:10px;font-weight:800;letter-spacing:.7px}.wallet strong{display:block;font-size:27px;margin-top:6px}.wallet em{font-size:12px;color:#efc876;font-style:normal}.wallet .lvl strong{color:#ebc478;font-size:19px}
+.hero{border:1px solid #61407e;border-radius:24px;padding:22px;background:radial-gradient(circle at 80% 90%,#7936ae88,#291540 52%,#171025);min-height:255px;position:relative;overflow:hidden;margin-bottom:25px}
+.eyebrow{color:#e8c777;font-size:10px;letter-spacing:2px;font-weight:900}.hero h1{font-size:34px;margin:17px 0 12px;line-height:1.12}.hero h1 span{color:#c99aff}.hero p{font-size:12px;line-height:1.65;max-width:265px;color:#cfbddd}.skyline{font-size:58px;position:absolute;right:8px;bottom:-4px;color:#794bb1aa;letter-spacing:-10px;text-shadow:0 0 26px #b566ef}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:24px 0 12px}.heading h2{font-size:19px;margin:0}.heading span{font-size:11px;color:#b8a1c7}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mode{min-height:169px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;padding:15px;border:1px solid #644781;border-radius:20px;background:linear-gradient(145deg,#322045,#15101f)}
+.mode:nth-child(2){border-color:#306b66;background:linear-gradient(140deg,#1a3a3c,#15101e)}.mode:nth-child(3){border-color:#7c425d;background:linear-gradient(140deg,#4a2338,#18101d)}.mode:nth-child(4){border-color:#806039;background:linear-gradient(140deg,#493422,#191120)}
+.mode .ico{font-size:28px;background:#ffffff10;padding:5px;border-radius:12px}.mode b{font-size:16px}.mode small{font-size:11px;color:#bcacc9;line-height:1.5}.mode .open{margin-top:auto;font-size:11px;font-weight:900;color:#deb4ff}
+.panel{background:linear-gradient(140deg,#281b3a,#191323);border:1px solid #564069;border-radius:17px;padding:16px;margin:10px 0}.panel strong{font-size:13px}.panel small{display:block;color:#ad9fbc;font-size:11px;margin-top:6px}.panel-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-row button{background:#d9b571;color:#221427;border-radius:11px;padding:10px;font-size:12px;font-weight:900}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.badges div{text-align:center;background:#21172f;border:1px solid #5f437a;border-radius:12px;padding:13px 5px;font-size:11px}.badges span{font-size:25px;display:block;margin-bottom:7px}.muted{color:#b5a2c9;font-size:12px;line-height:1.6}.district{display:flex;align-items:center;gap:10px}.district i{font-style:normal;font-size:27px}.district.locked{opacity:.52}
+.nav{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);display:flex;background:#170f25f5;border-top:1px solid #563767;backdrop-filter:blur(14px);padding:10px 2px max(12px,env(safe-area-inset-bottom))}
+.nav button{background:transparent;flex:1;display:grid;gap:5px;justify-items:center;color:#ad95bc;padding:2px}.nav button.active{color:#f4cd7e}.nav span{font-size:23px}.nav small{font-size:9px}
+.back{background:none;color:#d0a9f9;font-size:13px;padding:10px 0}.modehead{text-align:center;padding:15px 0 20px}.modehead .ico{font-size:42px}.modehead h1{font-size:29px;margin:8px}.modehead p{font-size:12px;color:#b8a4cd}
+.board{border:1px solid #634180;border-radius:21px;background:linear-gradient(145deg,#2b1b42,#1c122b);padding:20px 14px;text-align:center;position:relative}
+.plinko{height:285px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.pins{display:flex;justify-content:space-evenly}.pins i{width:6px;height:6px;background:#dbacf9;border-radius:50%;box-shadow:0 0 10px #bb77ed}
+.bins{display:flex;gap:3px}.bins span{background:#77519c;flex:1;padding:8px 0;border-radius:6px;font-size:11px;font-weight:800}
+.ball{position:absolute;top:0;left:48%;background:#f6d26e;width:17px;height:17px;border-radius:50%;box-shadow:0 0 16px #ffe392;animation:fall 1.5s ease-in forwards}@keyframes fall{0%{top:0;left:48%}20%{left:38%}40%{left:62%}60%{left:43%}80%{left:58%}100%{top:86%;left:var(--end,50%)}}
+.mines{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.cell{aspect-ratio:1;border:1px solid #855bae;border-radius:10px;background:linear-gradient(145deg,#583677,#38244e);font-size:24px}.cell.safe{background:#225c55}.cell.bad{background:#733144}
+.rocket{font-size:62px;animation:float 2s ease-in-out infinite}@keyframes float{50%{transform:translate(13px,-16px)}}.mult{font-size:48px;font-weight:900;color:#edc578;margin:5px}.wheel{width:230px;height:230px;border-radius:50%;border:8px solid #e0b86d;background:conic-gradient(#a76aef 0 60deg,#6c3b92 60deg 120deg,#f3c675 120deg 180deg,#853e95 180deg 240deg,#bc8e5b 240deg 300deg,#7344af 300deg);display:grid;place-items:center;margin:12px auto 4px;box-shadow:0 0 33px #6d399c66}.wheel.spin{animation:spin 1.8s cubic-bezier(.17,.85,.19,1)}@keyframes spin{to{transform:rotate(1510deg)}}.wheelcore{background:#21142e;border:3px solid #eed6a1;border-radius:50%;width:107px;height:107px;display:grid;place-items:center;font-size:15px;font-weight:900;line-height:1.4}.pointer{font-size:20px;color:#eccb81}
+.stake{padding:17px;border-radius:16px;margin:17px 0;border:1px solid #4d365f;background:#22182f}.stakeButtons{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}.stakeButtons button{padding:9px;flex:1;background:#3a2850;border-radius:10px;font-size:12px;font-weight:800}.stakeButtons button.active{background:#b48ae6;color:#1d0f2b}
+.primary{display:block;width:100%;padding:17px 12px;background:linear-gradient(125deg,#a56fe6,#dfb979);color:#22122c;border-radius:15px;font-size:15px;font-weight:900;margin:17px 0;box-shadow:0 8px 22px #8553bf44}
+.result{padding:18px;border:1px solid #c4a26d;text-align:center;border-radius:14px;margin:16px 0;background:#4b333d;color:#ffdf91;font-weight:900;font-size:18px}
+.toast{position:fixed;z-index:30;bottom:105px;left:50%;transform:translateX(-50%);max-width:340px;width:90%;text-align:center;background:#56366d;border:1px solid #cba6ec;border-radius:12px;padding:13px;font-size:13px;box-shadow:0 10px 35px #0009}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.statgrid div{border:1px solid #5d417b;border-radius:14px;padding:16px;background:#29193b}.statgrid small{font-size:11px;color:#a996bd;display:block}.statgrid strong{display:block;font-size:23px;margin-top:8px}.input{background:#170f23;border:1px solid #785895;color:#fff;padding:12px;border-radius:11px;width:100%;margin:10px 0}
+footer{color:#9986a7;font-size:10px;text-align:center;padding:26px 0 0}
+@media(prefers-reduced-motion:reduce){.ball,.rocket,.wheel.spin{animation:none}}
+</style></head>
+<body><div class="app" id="app"></div><script>
+(function(){
+'use strict';
+var KEY='lucky_city_public_demo_1';
+var MODES=[['plinko','🔮','PLINKO','Удача на каждом шагу'],['mines','💎','MINES','Найди безопасную клетку'],['crash','🚀','CRASH','Успей забрать выигрыш'],['wheel','🎡','LUCKY WHEEL','Колесо подарков']];
+var DIST=[['🌃','Neon Street',1],['🎡','Fortune Square',5],['🏙️','Golden District',12],['👑','Royal Heights',25]];
+var qs=[['play3','Сыграть 3 раунда',3],['play8','Сыграть 8 раундов',8],['different2','Сыграть в двух режимах',2]];
+var state,screen='city',mode='plinko',stake=50,lastResult='',ball=false,toast='',lost=[],tab='season',spinning=false;
+function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,history:[],quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,club:null}}
+try{state=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){state=fresh()}
+function day(){return new Date().toISOString().slice(0,10)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function money(n){return Number(n||0).toLocaleString('ru-RU')}
+function lvl(){return 1+Math.floor(state.xp/250)}
+function snack(msg){toast=msg;render();setTimeout(function(){toast='';render()},2600)}
+function change(delta,type){if(state.balance+delta<0)throw Error('Недостаточно LC');state.balance+=delta;if(delta>0)state.earned+=delta;state.history.unshift({delta:delta,type:type});state.history=state.history.slice(0,16)}
+function round(kind){state.spins++;state.xp+=5;dailyQuest();state.quests.rounds++;if(state.quests.modes.indexOf(kind)<0)state.quests.modes.push(kind);[['first',1],['ten',10],['fifty',50],['hundred',100]].forEach(function(a){if(state.spins>=a[1]&&state.ach.indexOf(a[0])<0)state.ach.push(a[0])})}
+function dailyQuest(){if(state.quests.date!==day())state.quests={date:day(),rounds:0,modes:[],claimed:[]}}
+function mMult(n){if(!n)return 0;var chance=1;for(var i=0;i<n;i++)chance*=(22-i)/(25-i);return Math.floor(90/chance)/100}
+function choose(list){var total=0;list.forEach(function(a){total+=a[1]});var r=Math.random()*total;for(var i=0;i<list.length;i++){r-=list[i][1];if(r<0)return list[i][0]}return list[list.length-1][0]}
+function crashMult(){return Math.min(100,Math.max(1,Math.floor((1+(Date.now()-state.crash.start)/3000)*100)/100))}
+function settle(){if(state.crash&&crashMult()>=state.crash.point){lastResult='💥 CRASH ×'+state.crash.point;state.crash=null;round('crash');save();return true}return false}
+function act(type,value){try{
+ if(type==='nav'){screen=value;lastResult='';lost=[]}
+ if(type==='mode'){screen='mode';mode=value;lastResult='';lost=[]}
+ if(type==='back'){screen='city';lastResult=''}
+ if(type==='stake')stake=Number(value);
+ if(type==='reset'){if(confirm('Сбросить все тестовые монеты и прогресс?')){state=fresh();screen='city';lastResult='';lost=[]}}
+ if(type==='daily'){if(state.daily===day())throw Error('Подарок уже получен');change(500,'Подарок');state.daily=day();snack('🎁 +500 LC')}
+ if(type==='plinko'){settle();if(state.mines||state.crash)throw Error('Завершите активный раунд');change(-stake,'Plinko');var x=choose([[0,20],[.5,30],[1,30],[2,15],[3,5]]);var win=Math.floor(stake*x);if(win)change(win,'Plinko выигрыш');round('plinko');ball=true;lastResult='×'+x+' · '+win+' LC';setTimeout(function(){ball=false;render()},1550)}
+ if(type==='wheel'){if(state.wheel===day())throw Error('Колесо сегодня уже вращалось');var prize=choose([[0,10],[50,30],[100,30],[150,20],[300,8],[500,2]]);if(prize)change(prize,'Колесо');state.wheel=day();round('wheel');spinning=true;lastResult='🎁 +'+prize+' LC';setTimeout(function(){spinning=false;render()},1900)}
+ if(type==='mines-start'){if(state.mines||state.crash)throw Error('Завершите активный раунд');var bet=Math.min(stake,200);change(-bet,'Mines');var arr=Array.from({length:25},function(_,i){return i});for(var i=24;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp}state.mines={stake:bet,bombs:arr.slice(0,3),opened:[]};lost=[];lastResult=''}
+ if(type==='reveal'){var m=state.mines,cell=Number(value);if(!m||m.opened.indexOf(cell)>=0)throw Error('Недоступная клетка');if(m.bombs.indexOf(cell)>=0){lost=m.bombs;state.mines=null;round('mines');lastResult='💥 Мина! Раунд завершён'}else{m.opened.push(cell);if(m.opened.length===12){var payout=Math.floor(m.stake*mMult(12));change(payout,'Mines выигрыш');state.mines=null;round('mines');lastResult='💎 +'+payout+' LC'}}}
+ if(type==='mines-cash'){var m=state.mines;if(!m||!m.opened.length)throw Error('Откройте безопасную клетку');var reward=Math.floor(m.stake*mMult(m.opened.length));change(reward,'Mines выигрыш');state.mines=null;round('mines');lastResult='💎 +'+reward+' LC'}
+ if(type==='crash-start'){settle();if(state.crash||state.mines)throw Error('Завершите активный раунд');change(-stake,'Crash');var r=Math.random();state.crash={stake:stake,start:Date.now(),point:r<.1?1:Math.min(100,Math.floor(90/(1-r))/100)};lastResult=''}
+ if(type==='crash-cash'){if(!state.crash)throw Error('Нет активного раунда');var mult=crashMult();if(mult>=state.crash.point){lastResult='💥 CRASH ×'+state.crash.point;state.crash=null;round('crash')}else{var pay=Math.floor(state.crash.stake*mult);change(pay,'Crash выигрыш');state.crash=null;round('crash');lastResult='🚀 +'+pay+' LC'}}
+ if(type==='claim'){dailyQuest();var q=qs.find(function(x){return x[0]===value});var p=q[0]==='different2'?state.quests.modes.length:state.quests.rounds;if(p<q[2]||state.quests.claimed.indexOf(value)>=0)throw Error('Задание ещё не доступно');state.quests.claimed.push(value);change(100,'Задание');snack('⭐ +100 LC')}
+ if(type==='club'){var input=document.getElementById('clubname');var name=(input&&input.value||'').trim();if(name.length<3||name.length>24)throw Error('Название клуба: 3–24 символа');state.club=name;snack('Клуб создан в демоверсии')}
+ if(type==='leave'){state.club=null;snack('Вы вышли из клуба')}
+ save();render();
+ }catch(e){snack(e.message||'Ошибка действия')}
+}
+function el(tag,c){return '<'+tag+'>'+c+'</'+tag+'>'}
+function button(label,action,value,cl,disabled){return '<button class="'+(cl||'')+'" data-action="'+action+'" data-value="'+(value||'')+'"'+(disabled?' disabled':'')+'>'+label+'</button>'}
+function heading(title,sub){return '<div class="heading"><h2>'+title+'</h2><span>'+(sub||'')+'</span></div>'}
+function cards(){return MODES.map(function(m){return '<button class="mode" data-action="mode" data-value="'+m[0]+'"><span class="ico">'+m[1]+'</span><b>'+m[2]+'</b><small>'+m[3]+'</small><span class="open">ИГРАТЬ ›</span></button>'}).join('')}
+function city(){var html='<section class="hero"><div class="eyebrow">✦ НОЧНОЙ ГОРОД</div><h1>Твоя удача.<br><span>Твои правила.</span></h1><p>Оцени игровые механики, собери награды и открой достижения. Только виртуальные монеты.</p><div class="skyline">▂▆▃▇▅▉▆▃▇</div></section>';
+ html+=heading('Игровые залы','4 режима')+'<div class="grid">'+cards()+'</div>';
+ html+=heading('Районы города','Уровень '+lvl())+'<div class="grid">';
+ DIST.forEach(function(d){var open=lvl()>=d[2];html+='<div class="panel district '+(open?'':'locked')+'"><i>'+(open?d[0]:'🔒')+'</i><div><strong>'+d[1]+'</strong><small>'+(open?'Открыт':'С уровня '+d[2])+'</small></div></div>'});html+='</div>';
+ html+=heading('Сезонные достижения',state.xp+' XP')+'<div class="badges"><div><span>'+(state.xp>=50?'🥉':'🔒')+'</span>Бронза · 50 XP</div><div><span>'+(state.xp>=250?'🥈':'🔒')+'</span>Серебро · 250 XP</div><div><span>'+(state.xp>=750?'🥇':'🔒')+'</span>Золото · 750 XP</div></div>';
+ html+='<div class="panel panel-row"><div><strong>🎁 Ежедневный подарок</strong><small>500 LC каждый день</small></div>'+button(state.daily===day()?'Получено':'Забрать','daily','','',state.daily===day())+'</div>';return html}
+function modes(){var m=MODES.find(function(x){return x[0]===mode});var h=button('‹ Назад в город','back','','back')+'<div class="modehead"><div class="ico">'+m[1]+'</div><h1>'+m[2]+'</h1><p>'+m[3]+'</p></div>';
+ if(mode==='plinko'){h+='<div class="board"><div class="plinko">'+(ball?'<div class="ball" style="--end:'+[9,20,34,48,62,76,90][Math.floor(Math.random()*7)]+'%"></div>':'');for(var i=0;i<8;i++){h+='<div class="pins">'+Array.from({length:i+3},function(){return '<i></i>'}).join('')+'</div>'}h+='<div class="bins">'+['×3','×0','×1','×2','×.5','×1','×3'].map(function(x){return '<span>'+x+'</span>'}).join('')+'</div></div><p class="muted">Исход рассчитывается случайным образом. Анимация декоративная.</p></div>'}
+ if(mode==='mines'){h+='<div class="mines">';for(var j=0;j<25;j++){var safe=state.mines&&state.mines.opened.indexOf(j)>=0,bad=lost.indexOf(j)>=0;h+=button(safe?'💎':bad?'💣':'✧','reveal',String(j),'cell '+(safe?'safe':bad?'bad':''),!state.mines||safe||bad)}h+='</div><p class="muted">3 мины, поле 5×5. Открывай клетки и забирай монеты.</p>'}
+ if(mode==='crash'){h+='<div class="board"><div class="rocket">🚀</div><div class="mult" id="crashnum">×'+(state.crash?crashMult().toFixed(2):'1.00')+'</div><p class="muted">'+(state.crash?'Множитель растёт — успей забрать':'Начни новый полёт')+'</p></div>'}
+ if(mode==='wheel'){h+='<div class="board"><div class="pointer">▼</div><div class="wheel '+(spinning?'spin':'')+'"><div class="wheelcore">LUCKY<br>CITY</div></div><p class="muted">Бесплатно один раз в день</p></div>'}
+ if(lastResult)h+='<div class="result">'+lastResult+'</div>';
+ if(mode!=='wheel'){h+='<div class="stake"><b>💰 Ставка · тестовые LC</b><div class="stakeButtons">'+[10,50,100,200,500].filter(function(x){return mode!=='mines'||x<=200}).map(function(x){return button(x,'stake',String(x),stake===x?'active':'')}).join('')+'</div></div>'}
+ if(mode==='plinko')h+=button('🔮 Запустить за '+stake+' LC','plinko','','primary',ball);
+ if(mode==='wheel')h+=button(state.wheel===day()?'Сегодня уже вращали':'🎡 Вращать бесплатно','wheel','','primary',state.wheel===day()||spinning);
+ if(mode==='mines')h+=state.mines?button('💎 Забрать ×'+mMult(state.mines.opened.length),'mines-cash','','primary',!state.mines.opened.length):button('💎 Начать за '+Math.min(stake,200)+' LC','mines-start','','primary');
+ if(mode==='crash')h+=state.crash?button('🚀 Забрать множитель','crash-cash','','primary'):button('🚀 Запустить за '+stake+' LC','crash-start','','primary');
+ return h}
+function quest(){dailyQuest();var h=heading('Ежедневные задания','+100 LC за каждое');qs.forEach(function(q){var n=q[0]==='different2'?state.quests.modes.length:state.quests.rounds;var done=state.quests.claimed.indexOf(q[0])>=0;h+='<div class="panel panel-row"><div><strong>⭐ '+q[1]+'</strong><small>'+Math.min(n,q[2])+'/'+q[2]+'</small></div>'+button(done?'Получено':'Забрать','claim',q[0],'',done||n<q[2])+'</div>'});h+=heading('Достижения','За раунды');[['first','Первый шаг'],['ten','Завсегдатай'],['fifty','Житель города'],['hundred','Легенда улиц']].forEach(function(a){h+='<div class="panel panel-row"><strong>🏆 '+a[1]+'</strong><span>'+(state.ach.indexOf(a[0])>=0?'✅':'🔒')+'</span></div>'});return h}
+function rating(){var xp=tab==='season'?state.xp:state.xp;return heading('Рейтинг города','Демо')+'<p class="muted">Здесь только ваш тестовый профиль. В демо нет реальных игроков.</p><div class="panel panel-row"><strong>🥇 Вы (демо)</strong><strong>'+money(xp)+' XP</strong></div>'}
+function clubs(){var h=heading('Клубы города','Демо')+'<p class="muted">Клубы не синхронизируются с сервером. Проверьте внешний вид раздела.</p>';if(state.club)h+='<div class="panel"><strong>🏰 '+escapeText(state.club)+'</strong><small>1 участник из 30</small>'+button('Покинуть клуб','leave','','ghost')+'</div>';else h+='<div class="panel"><strong>Создать тестовый клуб</strong><input class="input" id="clubname" maxlength="24" placeholder="Название клуба">'+button('Создать бесплатно','club','','primary')+'</div>';h+=heading('Чемпионат клубов','Сезон 1')+'<div class="panel"><strong>'+(state.club?'🥇 '+escapeText(state.club):'Пока нет участников')+'</strong><small>'+(state.club?state.xp+' XP':'Создай первый клуб')+'</small></div>';return h}
+function escapeText(value){return String(value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
+function profile(){var h='<div class="board"><div style="font-size:48px">👑</div><h2>Мой профиль</h2><p class="muted">Уровень '+lvl()+' · '+money(state.xp)+' XP</p></div><div class="statgrid" style="margin-top:14px"><div><small>Раундов</small><strong>'+state.spins+'</strong></div><div><small>Получено LC</small><strong>'+money(state.earned)+'</strong></div></div>';h+=heading('Последние операции','Демо');h+=state.history.length?state.history.map(function(x){return '<div class="panel panel-row"><small>'+escapeText(x.type)+'</small><strong style="color:'+(x.delta>0?'#9eeac9':'#eec6d5')+'">'+(x.delta>0?'+':'')+x.delta+' LC</strong></div>'}).join(''):'<div class="panel">История пока пуста</div>';return h}
+function render(){var app=document.getElementById('app');if(!app)return;var h='<div class="demo"><div><strong>🎮 ДЕМОВЕРСИЯ LUCKY CITY</strong><small>Только виртуальные монеты · без регистрации</small></div>'+button('Сбросить','reset','','ghost')+'</div>';
+ h+='<header class="top"><div><div class="brand">✦ LUCKY <span>CITY</span></div><div class="sub">ГОРОД ТВОЕЙ УДАЧИ</div></div>'+button('👑','nav','profile','avatar')+'</header>';
+ h+='<div class="wallet"><div><small>💰 LUCKY COINS</small><strong>'+money(state.balance)+' <em>LC</em></strong></div><div class="lvl"><small>⭐ РЕПУТАЦИЯ</small><strong>Ур. '+lvl()+'</strong></div></div>';
+ h+=screen==='city'?city():screen==='mode'?modes():screen==='quests'?quest():screen==='rating'?rating():screen==='clubs'?clubs():profile();
+ h+='<footer>ПРЕДПРОСМОТР · без сервера, платежей и реальных призов</footer><div class="nav">'+[['city','🏙️','Город'],['quests','🎁','Награды'],['rating','🏆','Рейтинг'],['clubs','🏰','Клубы'],['profile','👤','Профиль']].map(function(x){return button('<span>'+x[1]+'</span><small>'+x[2]+'</small>','nav',x[0],screen===x[0]?'active':'')}).join('')+'</div>';
+ if(toast)h+='<div class="toast">'+escapeText(toast)+'</div>';app.innerHTML=h}
+document.addEventListener('click',function(e){var b=e.target.closest('button[data-action]');if(b&&!b.disabled)act(b.dataset.action,b.dataset.value)});
+setInterval(function(){if(state.crash){if(settle())render();else{var el=document.getElementById('crashnum');if(el)el.textContent='×'+crashMult().toFixed(2)}}},180);
+save();render();
+})();
+</script></body></html>
