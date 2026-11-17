@@ -234,6 +234,46 @@ body{font-family:Inter,Manrope,system-ui,-apple-system,sans-serif;background:rad
 .pointer{filter:drop-shadow(0 3px 4px #000b)}
 .result{border:1px solid #f6d2a4;background:linear-gradient(130deg,#483348,#2b1b34);box-shadow:0 0 26px #ceab7c33;letter-spacing:.1px}
 @media(prefers-reduced-motion:reduce){.plinkoBall,.cell.safe,.cell.bad,.crashDeluxe.burst:before{animation:none!important}}
+
+/* CITY EMPIRE v1.4 — interactive city building management */
+.empireTeaser{margin-top:15px;background:radial-gradient(circle at 100% 0,#bd8d5e42,transparent 55%),linear-gradient(135deg,#30253f,#18131e);border:1px solid #e0be855c;box-shadow:inset 0 1px #ffffff2b,0 12px 24px #0006}
+.empireTeaser h3{font-size:21px;margin:7px 0 6px;color:#f5d6a3}
+.empireTeaser p{max-width:245px}
+.empireTeaser .panel-row:last-child{margin-top:14px;align-items:center}
+.empireTeaser .panel-row button{flex-shrink:0}
+.empireIcon{font-size:48px;color:#d8b788;text-shadow:0 0 17px #deb77a75}
+.cityEmpireHero{margin:10px 0 20px;padding:22px;background:radial-gradient(circle at 92% 12%,#8c624e66,transparent 55%),linear-gradient(140deg,#362943,#17121f);border:1px solid #e8c18b5b;box-shadow:0 15px 38px #0006}
+.cityEmpireHero h2{font-size:26px;line-height:1.13;margin:10px 0}
+.cityEmpireHero>.primary{display:block;width:100%;margin-top:16px;padding:16px 12px;font-size:15px;border-radius:13px}
+.cityEmpireHero .subtitle{letter-spacing:2px;color:#e6c48e}
+.cityEmpireStats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+.cityEmpireStats>div{padding:12px;border-radius:13px;background:#ffffff0b;border:1px solid #ffffff18}
+.cityEmpireStats small{display:block;font-size:11px;color:#baaccb}
+.cityEmpireStats strong{display:block;margin-top:5px;font-size:21px;color:#f3d49f}
+.empireBuilding{padding:0;overflow:hidden;margin:12px 0;background:linear-gradient(145deg,#2c2238,#16121d);border:1px solid #dabb8951}
+.empireBuilding.locked{opacity:.75}
+.empireBuilding .buildingVisual{height:130px;position:relative;background:radial-gradient(circle at 78% 20%,#c7a18a38,transparent 55%),linear-gradient(155deg,#33264c,#171321 85%);overflow:hidden}
+.buildingVisual:after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#0c0919 0%,transparent 80%),repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 28px);pointer-events:none}
+.buildingVisual.building-fortune{background:radial-gradient(circle at 75% 10%,#e3b77b55,transparent 50%),linear-gradient(155deg,#503841,#211624)}
+.buildingVisual.building-golden{background:radial-gradient(circle at 90% 10%,#e4b36c54,transparent 55%),linear-gradient(155deg,#50452d,#1e1a21)}
+.buildingVisual.building-royal{background:radial-gradient(circle at 85% 15%,#ae9de05a,transparent 55%),linear-gradient(155deg,#3e3b62,#191528)}
+.tower-group{position:absolute;bottom:0;left:16px;right:16px;height:110px;display:flex;align-items:flex-end;gap:12px;filter:drop-shadow(0 -4px 17px #c89ad34d)}
+.tower-group i{position:relative;display:block;flex:1;height:70%;border-radius:3px 3px 0 0;background:linear-gradient(90deg,#2a2238 0%,#6f607a 45%,#24202c 100%);border:1px solid #d4b8e04d;border-bottom:none;box-shadow:inset 0 0 15px #a57ac233}
+.tower-group i:nth-child(2){height:99%;flex:1.2;background:linear-gradient(90deg,#30263c,#806782 42%,#292234)}
+.tower-group i:nth-child(3){height:82%;background:linear-gradient(90deg,#262136,#695777 44%,#222031)}
+.tower-group i:after{content:'';position:absolute;inset:7px;background:repeating-linear-gradient(0deg,#e7d2a87e 0 2px,transparent 2px 11px);mask-image:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 15px);opacity:.85}
+.buildingNumber{position:absolute;top:13px;right:16px;font-size:45px;letter-spacing:-3px;font-weight:900;color:#ffffff2b;text-shadow:0 2px 9px #0008}
+.buildingSheen{position:absolute;inset:0;background:linear-gradient(125deg,#ffffff19,transparent 48%);pointer-events:none}
+.buildingContent{padding:17px}
+.buildingContent .panel-row{align-items:baseline}
+.buildingContent strong{font-size:17px}
+.buildingContent .levelProgress{margin:14px 0 8px}
+.buildingContent p{margin:9px 0;font-size:12px}
+.buildingReturn{display:flex;justify-content:space-between;gap:10px;margin-top:13px;color:#c7b6d9;font-size:11px;flex-wrap:wrap}
+.buildingReturn span:first-child{color:#f0d29e;font-weight:800}
+.buildingContent>button{display:block;width:100%;margin-top:15px;border-radius:12px;padding:13px;font-size:13px}
+.buildingContent>button:disabled{opacity:.5}
+@media(max-width:365px){.empireTeaser .panel-row:last-child{flex-wrap:wrap}.empireTeaser .panel-row button{width:100%}.cityEmpireHero h2{font-size:24px}}
 </style></head>
 <body><div class="app" id="app"></div><script>
 (function(){
