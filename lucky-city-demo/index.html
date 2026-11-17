@@ -189,6 +189,51 @@ body{font-family:Inter,Manrope,system-ui,-apple-system,sans-serif;background:rad
 .stake .ui-icon{color:#e1bf85}
 .minibadge .ui-icon{width:24px;height:24px}
 @media(prefers-reduced-motion:reduce){.cityscape:after,.ball.deluxeBall,.wheel.slotSpin,.cell.safe,.cell.bad,.result{animation:none!important}}
+
+/* REALISM 1.3: game materials, physically staged motion, depth and legibility */
+.mode{background-size:cover;isolation:isolate}
+.mode:after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(0deg,#110c1bea,transparent 65%),repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 8px);opacity:.5}
+.mode .ico{position:relative;z-index:1;border-radius:16px}
+.mode:active{transform:translateY(1px) scale(.987)}
+.hero.deluxe{background-position:center;background-size:cover}
+.photoCredit{font-size:10px;color:#c8b9d3ba;text-align:right;margin-top:-14px;margin-bottom:12px}
+.plinko{position:relative;height:327px;padding-top:17px;background:radial-gradient(ellipse at 50% -14%,#8f74b82e,transparent 65%),linear-gradient(155deg,#34253f,#10101b);border:1px solid #bba8cb37;box-shadow:inset 0 10px 22px #0005,inset 0 1px #ffffff2b}
+.plinko:before{content:'';position:absolute;inset:6px;border:2px solid #d3c3e422;border-radius:14px;pointer-events:none}
+.plinko .pins{min-height:17px;align-items:center}
+.plinko .pins i{height:8px;width:8px;background:radial-gradient(circle at 25% 20%,#ffffff,#aa9cad 44%,#504554);box-shadow:inset 1px 1px #fff9,0 2px 5px #0009,0 0 7px #be9de444}
+.plinko .bins{position:relative;z-index:2;padding:0 6px 3px}
+.plinko .bins span{border:1px solid #eedbbd37;background:linear-gradient(170deg,#65547f,#342743);border-radius:6px;box-shadow:inset 0 2px #ffffff25,0 4px 8px #0007}
+.plinko .bins span.hit{background:linear-gradient(170deg,#f9e2ab,#cda260);box-shadow:0 0 18px #ffd08f9c}
+.plinkoFx{position:absolute;pointer-events:none;inset:0;overflow:hidden;z-index:4}
+.plinkoBall{position:absolute;top:8px;left:calc(var(--ball-end) - 10px);width:19px;height:19px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#fffdf0,#ffe9a6 25%,#d3a65f 67%,#5b3e25);box-shadow:0 1px 2px #000d,0 0 12px #ffe4a0b5;animation:realPlinko 2s cubic-bezier(.22,.13,.43,.99) forwards}
+@keyframes realPlinko{0%{top:5%;left:48%;transform:scale(.8)}12%{top:16%;left:var(--x1);transform:rotate(40deg)}25%{top:28%;left:var(--x2);transform:rotate(80deg)}37%{top:39%;left:var(--x3);transform:rotate(130deg)}49%{top:50%;left:var(--x4);transform:rotate(180deg)}62%{top:61%;left:var(--x5);transform:rotate(230deg)}75%{top:72%;left:var(--x6);transform:rotate(260deg)}87%{top:79%;left:var(--x7);transform:rotate(290deg)}100%{top:87%;left:var(--ball-end);transform:rotate(340deg)}}
+.plinkoLegend{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;margin-top:10px;border:1px solid #d1b69024;border-radius:11px;color:#c8b9d5;font-size:11px}
+.mines{border-radius:20px;padding:12px;background:radial-gradient(ellipse at 50% 50%,#5d477040,#130e1e);border:1px solid #ad96bc36;box-shadow:inset 0 3px 18px #08060e}
+.cell{border-radius:12px;box-shadow:inset 0 1px #ffffff38,inset 0 -5px #0c081344,0 5px 8px #0007;background:linear-gradient(145deg,#655479,#3b2b4d);transition:transform .22s,filter .22s,background .22s;transform-style:preserve-3d}
+.cell:not(:disabled):active{transform:perspective(300px) rotateY(14deg) scale(.92)}
+.cell.safe{background:linear-gradient(145deg,#4ba994,#21685d);box-shadow:inset 0 1px #c1fff566,0 0 14px #55e3b344;animation:flipGem .4s ease-out}
+.cell.bad{background:linear-gradient(145deg,#e57a8d,#722d4b);box-shadow:0 0 22px #ff596e77;animation:blastTile .48s ease-out}
+.cell .ui-icon{width:28px;height:28px;filter:drop-shadow(0 0 5px currentColor)}
+@keyframes flipGem{0%{transform:perspective(260px) rotateY(90deg) scale(.7);opacity:.3}80%{transform:perspective(260px) rotateY(-8deg) scale(1.08)}100%{transform:none;opacity:1}}
+@keyframes blastTile{0%{transform:scale(.68);filter:brightness(4)}55%{transform:scale(1.1);filter:brightness(1.7)}100%{transform:none}}
+.crashDeluxe{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 95%,#51337f,#100d1b 78%);box-shadow:inset 0 1px #ffffff27,0 14px 26px #0007}
+.crashDeluxe:after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,transparent 30%,#a47bff0b),repeating-linear-gradient(0deg,#fff1 0 1px,transparent 1px 32px);pointer-events:none}
+.crashGraph{z-index:1;opacity:.96}
+.crashGraph path.line{stroke:#f4d5a0;stroke-width:3.2;filter:drop-shadow(0 0 8px #ffd59e9d)}
+.crashRocket{font-size:35px;filter:drop-shadow(0 0 12px #ffd8a4);transform:rotate(36deg);z-index:4}
+.crashRocket .ui-icon{width:33px;height:33px;filter:drop-shadow(0 0 6px #f4d8a4)}
+.crashDeluxe .mult{font-variant-numeric:tabular-nums;text-shadow:0 2px 13px #000,0 0 26px #c794f844}
+.crashDeluxe.burst{background:radial-gradient(circle at 50% 55%,#b9496d99,#421a37 44%,#1a101d)}
+.crashDeluxe.burst:before{content:'';position:absolute;width:140px;height:140px;border-radius:50%;top:25%;left:40%;background:radial-gradient(circle,#fff4d4,#ffbb6a88 30%,#ef57764d 65%,transparent 80%);animation:burst .75s ease-out forwards;z-index:5}
+@keyframes burst{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.6);opacity:0}}
+.wheel{border:11px solid #eed3a2;box-shadow:inset 0 0 22px #150e21,0 0 0 5px #56485c,0 0 0 8px #a88c6544,0 22px 38px #0008;background:conic-gradient(from 0deg,#9c69d7 0deg 60deg,#58388b 60deg 120deg,#d3a35f 120deg 180deg,#8d57c2 180deg 240deg,#584183 240deg 300deg,#c38d4f 300deg 360deg)}
+.wheel:before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid #fff8;background:radial-gradient(circle at 30% 30%,#fff5,transparent 42%);pointer-events:none}
+.wheel .wheelcore{border:4px solid #f7e0aa;background:radial-gradient(circle at 30% 20%,#433356,#140c1f);box-shadow:0 0 0 5px #44243f,0 7px 22px #000b}
+.wheelPrize{font-size:13px;font-weight:900;filter:drop-shadow(0 1px 5px #000b)}
+.wheelPrize.active{color:#ffe7b2;text-shadow:0 0 8px #ffcf81}
+.pointer{filter:drop-shadow(0 3px 4px #000b)}
+.result{border:1px solid #f6d2a4;background:linear-gradient(130deg,#483348,#2b1b34);box-shadow:0 0 26px #ceab7c33;letter-spacing:.1px}
+@media(prefers-reduced-motion:reduce){.plinkoBall,.cell.safe,.cell.bad,.crashDeluxe.burst:before{animation:none!important}}
 </style></head>
 <body><div class="app" id="app"></div><script>
 (function(){
