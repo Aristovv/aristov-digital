@@ -321,6 +321,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
 
 .lcSeason,.lcSettings{margin:15px 0;padding:15px}.lcSeason>strong{color:#f0ca86}.lcSeasonGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.lcSeasonGrid button{border:1px solid #9e7b9e;border-radius:13px;padding:12px 5px;background:linear-gradient(#493157,#271a31);color:#efcfab;font-size:11px}.lcSeasonGrid button small{display:block;color:#c7add0}.lcSettings .row{flex-wrap:wrap}.lcSettings button{font-size:10px}.reduced-effects *, .reduced-effects *::before,.reduced-effects *::after{animation:none!important;transition:none!important}
 .wheel3d{border:12px ridge #f6d59c!important;transform-style:preserve-3d;box-shadow:inset 0 0 0 8px #f2c27a88,inset 0 0 25px #000c,0 0 0 7px #3c2449,0 18px 33px #000c!important}.wheel-wrap{perspective:900px;background:radial-gradient(ellipse at 50% 50%,#53356691,#180e21)!important}.wheel3d .center{border:5px ridge #ebc387;box-shadow:0 9px 18px #100a1599}.wheel-pointer{filter:drop-shadow(0 3px 5px #000)}
+.crashAutoPanel>.crashPresets{margin-top:9px}.bjHand{border-radius:15px;padding:6px;margin:7px 0;border:1px solid transparent}.bjHand.active{border-color:#d8b17c;box-shadow:0 0 14px #dcac6688}.bjHand p{color:#eac894;font-weight:800}.v2-blackjack-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.v2-blackjack-actions button{min-height:49px}.v2-blackjack-actions button:only-child{grid-column:span 2}
 </style>
   <script src="/sdk.js"></script>
 </head>
@@ -442,7 +443,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     let shopCategory='featured';
     let currentMode = 'plinko';
     let stake = 100;
-    let crashAutoEnabled=true, crashAutoTarget=2.4, mineCount=3, rouletteChip=10, rouletteBets=[], rouletteSpinning=false, slotsSpinning=false, gameSound=true, reduceEffects=false;
+    let crashAutoEnabled=true, crashAutoTarget=2.4, crashSeriesEnabled=false, crashSeriesCount=3, crashSeriesRemaining=0, crashSeriesStartBalance=0, crashStopLoss=300, crashTakeProfit=300, mineCount=3, rouletteChip=10, rouletteBets=[], rouletteSpinning=false, slotsSpinning=false, gameSound=true, reduceEffects=false;
     let toastTimer = null;
     let toastText = '';
     // Reference-inspired Plinko: 12 peg rows / 13 pockets, adjustable risk and simultaneous launches.
@@ -467,6 +468,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     if(!Array.isArray(state.rouletteHistory))state.rouletteHistory=[];
     if(!Number.isSafeInteger(state.slotsFree)||state.slotsFree<0)state.slotsFree=0;
     if(!Array.isArray(state.slotHistory))state.slotHistory=[];
+    if(state.blackjack&&!Array.isArray(state.blackjack.hands)){const g=state.blackjack;g.hands=[{cards:g.player||[],stake:g.stake||50,done:false}];g.active=0;g.split=false;}
     if(!state.settings)state.settings={sound:true,reducedMotion:false};
     gameSound=state.settings.sound!==false;reduceEffects=!!state.settings.reducedMotion;document.documentElement.classList.toggle('reduced-effects',reduceEffects);
 
@@ -484,6 +486,17 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     function level(){ return 1 + Math.floor(state.xp / 250); }
     function levelProgress(){ return (state.xp % 250) / 250 * 100; }
     function icon(name, cls=''){ return `<span class="icon ${cls}">${icons[name]||''}</span>`; }
+    function playUISound(type='tap'){
+      if(!gameSound)return;
+      try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+        const a=playUISound.ctx||(playUISound.ctx=new C());if(a.state==='suspended')a.resume().catch(()=>{});
+        const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+        o.type=type==='win'?'sine':'triangle';o.frequency.setValueAtTime(type==='win'?660:type==='lose'?190:420,t);
+        o.frequency.exponentialRampToValueAtTime(type==='win'?990:type==='lose'?110:360,t+.12);
+        g.gain.setValueAtTime(.045,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+        o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.15);
+      }catch(e){}
+    }
     function showToast(msg){ toastText = msg; render(); clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ toastText=''; render(); }, 2500); }
     function change(delta, reason){
       if(state.balance + delta < 0) throw new Error('Недостаточно LC');
@@ -533,8 +546,8 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       return weighted[weighted.length-1][0];
     }
 
-    function openMode(mode){ if(!MODE_META[mode])return; if(currentMode==='plinko'&&mode!=='plinko'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} currentMode = mode; screen = 'mode'; gameplayActive(true); render(); }
-    function setScreen(name){ screen = name; gameplayActive(name==='mode'); save(); render(); if(name!=='mode'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} }
+    function openMode(mode){ if(!MODE_META[mode])return;if(currentMode==='crash'&&mode!=='crash')crashSeriesRemaining=0; if(currentMode==='plinko'&&mode!=='plinko'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} currentMode = mode; screen = 'mode'; gameplayActive(true); render(); }
+    function setScreen(name){ if(name!=='mode'&&name!=='crash')crashSeriesRemaining=0;screen = name; gameplayActive(name==='mode'); save(); render(); if(name!=='mode'&&plinkoFrame){cancelAnimationFrame(plinkoFrame);plinkoFrame=0;plinkoRound=null;} }
 
     const PLINKO_ROWS = 12;
     const PLINKO_PAYOUTS = {
@@ -549,7 +562,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       return {steps,slot:rights,mult:PLINKO_PAYOUTS[plinkoRisk][rights]};
     }
     function plinkoSetRisk(value){if(plinkoRound)return;if(!PLINKO_PAYOUTS[value])throw new Error('Неизвестный риск');plinkoRisk=value;render();}
-    function plinkoSetCount(value){if(plinkoRound)return;const v=Number(value);if(![1,3,5,10].includes(v))throw new Error('Недопустимое число шариков');plinkoCount=v;render();}
+    function plinkoSetCount(value){if(plinkoRound)return;const v=Number(value);if(![1,3,5,10,25].includes(v))throw new Error('Недопустимое число шариков');plinkoCount=v;render();}
     function playPlinko(){
       if(plinkoRound)return;
       const total=stake*plinkoCount;
@@ -563,6 +576,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         addRound('plinko');
       }
       // Atomic settlement protects paid virtual rounds against tab close, reload and iOS suspension.
+      if(payout)playUISound('win');
       if(payout)change(payout,'Plinko · '+plinkoCount+' шар. · выигрыш');
       state.lastPlinko={risk:plinkoRisk,stake:stake,count:plinkoCount,spent:total,win:payout,slots:balls.map(b=>b.slot),at:Date.now()};
       save();
@@ -703,6 +717,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const g=state.crash;if(!g)return false;
       state.crash=null;cancelAnimationFrame(crashTicker);crashTicker=null;
       const paid=kind==='cash'?Math.floor(g.stake*mult):0;
+      playUISound(paid?'win':'lose');
       if(paid)change(paid,'Crash · '+(g.autoEnabled?'автовывод':'кэшаут')+' ×'+mult.toFixed(2));
       state.crashHistory.unshift({point:g.point,paid,stake:g.stake,at:Date.now(),auto:!!g.autoEnabled});
       state.crashHistory=state.crashHistory.slice(0,20);
@@ -710,6 +725,12 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       if(paid){state.crashStats.wins++;state.crashStats.paid+=paid;}
       state.lastCrash={kind,mult,paid,point:g.point};
       save();if(screen==='mode'&&currentMode==='crash')render();
+      if(crashSeriesRemaining>0){
+        crashSeriesRemaining--;const net=state.balance-crashSeriesStartBalance;
+        if(crashSeriesRemaining>0&&crashSeriesEnabled&&crashAutoEnabled&&!document.hidden&&screen==='mode'&&currentMode==='crash'&&net>-crashStopLoss&&net<crashTakeProfit&&state.balance>=stake){
+          setTimeout(()=>{if(crashSeriesRemaining>0&&crashSeriesEnabled&&!state.crash&&!document.hidden&&screen==='mode'&&currentMode==='crash')try{startCrash(true);}catch(e){crashSeriesRemaining=0;showToast(e.message)}},900);
+        }else{crashSeriesRemaining=0;}
+      }
       return true;
     }
     function crashResolve(now=Date.now()){
@@ -742,7 +763,8 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       if(currentMode==='crash'&&screen==='mode')crashDraw();
       crashTicker=requestAnimationFrame(crashStep);
     }
-    function startCrash(){
+    function startCrash(fromSeries=false){
+      if(!fromSeries){crashSeriesRemaining=crashSeriesEnabled&&crashAutoEnabled?crashSeriesCount:0;crashSeriesStartBalance=state.balance;}
       if(state.crash||state.mines||state.blackjack||state.poker||slotsSpinning||rouletteSpinning)throw Error('Завершите предыдущую игру');
       if(state.balance<stake)throw Error('Недостаточно LC');
       if(crashAutoEnabled&&(!Number.isFinite(crashAutoTarget)||crashAutoTarget<1.1||crashAutoTarget>100))throw Error('Автовывод 1,10–100');
@@ -758,7 +780,10 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       const g=state.crash,m=crashFactor(g);
       if(m>=g.point)crashFinish('crashed',g.point);else crashFinish('cash',m);
     }
-    function crashSetAuto(value){if(state.crash)return;crashAutoEnabled=value!=='off';render();}
+    function crashSetAuto(value){if(state.crash)return;crashAutoEnabled=value!=='off';if(!crashAutoEnabled)crashSeriesRemaining=0;render();}
+    function crashSeriesToggle(value){if(state.crash)return;crashSeriesEnabled=value==='on';if(crashSeriesEnabled)crashAutoEnabled=true;render();}
+    function crashSeriesSet(n){if(state.crash)return;const v=Number(n);if(![3,5,10].includes(v))throw Error('Доступны 3, 5 или 10 раундов');crashSeriesCount=v;render();}
+    function crashStopSet(kind,n){if(state.crash)return;const v=Number(n);if(![100,300,500,1000].includes(v))throw Error('Неверный лимит');if(kind==='loss')crashStopLoss=v;else crashTakeProfit=v;render();}
     function crashSetTarget(value){if(state.crash)return;const n=Number(value);if(!Number.isFinite(n)||n<1.1||n>100)throw Error('Автовывод от ×1,10 до ×100');crashAutoTarget=Math.round(n*100)/100;render();}
     
     function spinWheel(){
@@ -770,7 +795,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       spinning = true;
       state.wheelDay = day();
       addRound('wheel');
-      if(prize) change(prize, 'Lucky Wheel · приз');
+      playUISound(prize?'win':'lose');if(prize) change(prize, 'Lucky Wheel · приз');
       save();
       render();
       setTimeout(()=>{
@@ -806,7 +831,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
       cancelAnimationFrame(crashTicker);crashTicker=null;
       state = fresh();
       screen = 'city';
-      stake = 100;crashAutoEnabled=true;crashAutoTarget=2.4;mineCount=3;rouletteBets=[];slotsSpinning=false;rouletteSpinning=false;
+      stake = 100;crashSeriesRemaining=0;crashSeriesEnabled=false;crashAutoEnabled=true;crashAutoTarget=2.4;mineCount=3;rouletteBets=[];slotsSpinning=false;rouletteSpinning=false;
       revealBombs = [];
       plinkoIndex = null;
       cancelAnimationFrame(plinkoFrame); plinkoRound=null;
@@ -954,7 +979,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     function handValue(hand){let total=0,aces=0;for(const c of hand){total+=c.r===14?11:Math.min(c.r,10);if(c.r===14)aces++;}while(total>21&&aces){total-=10;aces--;}return total;}
     function payTablePoker(cards){let ranks=cards.map(c=>c.r).sort((a,b)=>a-b),count={};for(const r of ranks)count[r]=(count[r]||0)+1;let freq=Object.values(count).sort((a,b)=>b-a);let flush=cards.every(c=>c.suit===cards[0].suit);let u=[...new Set(ranks)];let straight=u.length===5&&(u[4]-u[0]===4||u.join(',')==='2,3,4,5,14');if(flush&&straight&&ranks[0]===10)return ['Роял-флеш',250];if(flush&&straight)return ['Стрит-флеш',50];if(freq[0]===4)return ['Каре',25];if(freq[0]===3&&freq[1]===2)return ['Фулл-хаус',9];if(flush)return ['Флеш',6];if(straight)return ['Стрит',4];if(freq[0]===3)return ['Сет',3];if(freq[0]===2&&freq[1]===2)return ['Две пары',2];if(Object.entries(count).some(([rank,n])=>+rank>=11&&n===2))return ['Пара валетов+',1];return ['Без комбинации',0];}
     function casinoReady(){if(state.mines||state.crash||state.blackjack||state.poker||spinning||slotsSpinning||rouletteSpinning)throw Error('Завершите активную игру');if(state.balance<stake)throw Error('Недостаточно LC');}
-    function recordCasino(mode,label,payout){if(payout)change(payout,label);addRound(mode);state.lastCasinoResult={mode,label,payout};save();showToast(label+(payout?' · +'+money(payout)+' LC':''));render();}
+    function recordCasino(mode,label,payout){playUISound(payout?'win':'lose');if(payout)change(payout,label);addRound(mode);state.lastCasinoResult={mode,label,payout};save();showToast(label+(payout?' · +'+money(payout)+' LC':''));render();}
     const SLOT_SYMBOLS=['7','♛','◆','BAR','★','♣','W','S'];
     const SLOT_WEIGHTS=[2,3,5,7,8,9,1,2];
     const SLOT_PAY={0:[30,84,240],1:[24,60,180],2:[18,48,120],3:[12,36,90],4:[9,24,60],5:[6,18,48],6:[30,84,240]};
@@ -1027,11 +1052,49 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
     function playRoulette(choice){rouletteAddBet(choice);rouletteSpin();}
     
-    function blackjackStart(){casinoReady();change(-stake,'Blackjack · ставка');let deck=cardDeck();state.blackjack={stake,deck,player:[deck.pop(),deck.pop()],dealer:[deck.pop(),deck.pop()]};save();render();if(handValue(state.blackjack.player)===21||handValue(state.blackjack.dealer)===21)blackjackFinish();}
-    function blackjackFinish(){const g=state.blackjack;if(!g)return;let p=handValue(g.player),d=handValue(g.dealer),natural=p===21&&g.player.length===2,dm=d===21&&g.dealer.length===2;if(p<=21&&!natural&&!dm)while(d<17){g.dealer.push(g.deck.pop());d=handValue(g.dealer);}let prize=0,label='ПРОИГРЫШ';if(p>21)label='ПЕРЕБОР';else if(natural&&!dm){prize=Math.floor(g.stake*2.5);label='BLACKJACK · 21';}else if(p===d){prize=g.stake;label='НИЧЬЯ';}else if(d>21||p>d){prize=g.stake*2;label='ПОБЕДА';}state.lastBlackjack={dealer:g.dealer,player:g.player};state.blackjack=null;recordCasino('blackjack',label,prize);}
-    function blackjackHit(){const g=state.blackjack;if(!g)throw Error('Нет активной раздачи');g.player.push(g.deck.pop());if(handValue(g.player)>=21)blackjackFinish();else{save();render();}}
-    function blackjackStand(){if(!state.blackjack)throw Error('Нет активной раздачи');blackjackFinish();}
-    function blackjackDouble(){const g=state.blackjack;if(!g||g.player.length!==2)throw Error('Удвоение только сразу после раздачи');if(state.balance<g.stake)throw Error('Недостаточно LC');change(-g.stake,'Blackjack · Double');g.stake*=2;g.player.push(g.deck.pop());blackjackFinish();}
+    function blackjackStart(){
+      casinoReady();change(-stake,'Blackjack · ставка');const deck=cardDeck();
+      const player=[deck.pop(),deck.pop()],dealer=[deck.pop(),deck.pop()];
+      state.blackjack={stake,deck,player,dealer,hands:[{cards:player,stake,done:false}],active:0,split:false};
+      save();render();if(handValue(player)===21||handValue(dealer)===21)blackjackFinish();
+    }
+    function blackjackActive(){const g=state.blackjack;if(!g)throw Error('Нет активной раздачи');return [g,g.hands[g.active]];}
+    function blackjackNext(){const g=state.blackjack;if(!g)return;
+      const next=g.hands.findIndex((x,i)=>i>g.active&&!x.done);
+      if(next>=0){g.active=next;g.player=g.hands[next].cards;save();render();}else blackjackFinish();
+    }
+    function blackjackFinish(){const g=state.blackjack;if(!g)return;
+      let d=handValue(g.dealer);
+      if(g.hands.some(h=>handValue(h.cards)<=21)&&d!==21)while(d<17){g.dealer.push(g.deck.pop());d=handValue(g.dealer);}
+      let total=0,winners=0;
+      g.hands.forEach((hand,i)=>{
+        const p=handValue(hand.cards),natural=!g.split&&hand.cards.length===2&&p===21;
+        const dealerNatural=g.dealer.length===2&&d===21;
+        let pay=0;
+        if(p>21)pay=0;
+        else if(natural&&!dealerNatural)pay=Math.floor(hand.stake*2.5);
+        else if(p===d)pay=hand.stake;
+        else if(!dealerNatural&&(d>21||p>d))pay=hand.stake*2;
+        if(pay>hand.stake)winners++;
+        total+=pay;
+      });
+      state.lastBlackjack={dealer:g.dealer,player:g.hands[0].cards,hands:g.hands.map(h=>h.cards)};
+      state.blackjack=null;
+      recordCasino('blackjack',winners?'BLACKJACK · '+winners+' выигр. рук':total?'BLACKJACK · ничья':'BLACKJACK · проигрыш',total);
+    }
+    function blackjackHit(){const [g,h]=blackjackActive();h.cards.push(g.deck.pop());if(handValue(h.cards)>=21){h.done=true;blackjackNext();}else{save();render();}}
+    function blackjackStand(){const [g,h]=blackjackActive();h.done=true;blackjackNext();}
+    function blackjackDouble(){const [g,h]=blackjackActive();if(h.cards.length!==2)throw Error('Удвоение только на первых двух картах');if(state.balance<h.stake)throw Error('Недостаточно LC');change(-h.stake,'Blackjack · Double');h.stake*=2;h.cards.push(g.deck.pop());h.done=true;blackjackNext();}
+    function blackjackSplit(){const [g,h]=blackjackActive();if(g.split||g.hands.length!==1||h.cards.length!==2)throw Error('Split недоступен');
+      const value=c=>c.r===14?11:Math.min(10,c.r);
+      if(value(h.cards[0])!==value(h.cards[1]))throw Error('Для Split нужны карты одного достоинства');
+      if(state.balance<h.stake)throw Error('Недостаточно LC для второй руки');
+      change(-h.stake,'Blackjack · Split');
+      const c1=h.cards[0],c2=h.cards[1],one={cards:[c1,g.deck.pop()],stake:h.stake,done:false},two={cards:[c2,g.deck.pop()],stake:h.stake,done:false};
+      g.hands=[one,two];g.split=true;g.active=0;g.player=one.cards;
+      if(c1.r===14){one.done=true;two.done=true;blackjackFinish();}else{save();render();}
+    }
+    
     function pokerStart(){casinoReady();change(-stake,'Video Poker · ставка');let deck=cardDeck();state.poker={stake,deck,cards:[deck.pop(),deck.pop(),deck.pop(),deck.pop(),deck.pop()],held:[]};save();render();}
     function pokerHold(n){let g=state.poker;if(!g||n<0||n>4)throw Error('Нет активных карт');g.held=g.held.includes(n)?g.held.filter(x=>x!==n):g.held.concat(n);save();render();}
     function pokerDraw(){const g=state.poker;if(!g)throw Error('Нет активных карт');for(let i=0;i<5;i++)if(!g.held.includes(i))g.cards[i]=g.deck.pop();let [label,mult]=payTablePoker(g.cards);state.lastPoker=g.cards.slice();state.poker=null;recordCasino('poker','VIDEO POKER · '+label,g.stake*mult);}
@@ -1059,8 +1122,10 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         <p class="tiny">Выбор не списывает баланс до запуска. Красное/чёрное, чёт/нечёт, диапазон ×2; дюжины и колонки ×3; число ×36. У колеса один зеро.</p>`;
       }
       if(game==='blackjack'){
-        const g=state.blackjack,prev=state.lastBlackjack||{},dl=g?g.dealer:prev.dealer||[],pl=g?g.player:prev.player||[];
-        h+=`<div class="v2-blackjack blackjack3d"><div class="v2-dealer-art"></div><p>ДИЛЕР ${g?'· закрытая карта':dl.length?'· '+handValue(dl):'· —'}</p><div class="v2-cards">${dl.map((c,i)=>g&&i===1?'<span class="v2-card cardback">LC</span>':cardHTML(c)).join('')}</div><p>ВАШИ КАРТЫ · ${pl.length?handValue(pl):'—'}</p><div class="v2-cards">${pl.map(cardHTML).join('')}</div><small>Дилер останавливается на мягких 17 · натуральное 21 ×2,5 · победа ×2</small></div><div class="v2-blackjack-actions">${g?`<button class="action primary" data-action="bj-hit">Взять</button><button class="action secondary" data-action="bj-stand">Остановиться</button><button class="action primary" data-action="bj-double" ${g.player.length!==2||state.balance<g.stake?'disabled':''}>Удвоить</button>`:`<button class="action primary full" data-action="bj-start">РАЗДАТЬ · ${money(stake)} LC</button>`}</div>`;
+        const g=state.blackjack,prev=state.lastBlackjack||{},dl=g?g.dealer:prev.dealer||[],hands=g?g.hands:(prev.hands||[prev.player||[]]).map(cards=>({cards,stake}));
+        const activeHand=g?g.hands[g.active]:null;
+        const canSplit=activeHand&&g.hands.length===1&&activeHand.cards.length===2&&(activeHand.cards[0].r===14?11:Math.min(10,activeHand.cards[0].r))===(activeHand.cards[1].r===14?11:Math.min(10,activeHand.cards[1].r))&&state.balance>=activeHand.stake;
+        h+=`<div class="v2-blackjack blackjack3d"><div class="v2-dealer-art"></div><p>ДИЛЕР ${g?'· закрытая карта':dl.length?'· '+handValue(dl):'· —'}</p><div class="v2-cards">${dl.map((c,i)=>g&&i===1?'<span class="v2-card cardback">LC</span>':cardHTML(c)).join('')}</div>${hands.map((hand,i)=>`<div class="bjHand ${g&&g.active===i?'active':''}"><p>ВАША РУКА ${hands.length>1?i+1:''} · ${hand.cards.length?handValue(hand.cards):'—'} · ${hand.stake||stake} LC</p><div class="v2-cards">${hand.cards.map(cardHTML).join('')}</div></div>`).join('')}<small>Натуральное 21 ×2,5 · Победа ×2 · Ничья ×1 · Дилер стоит на 17</small></div><div class="v2-blackjack-actions">${g?`<button class="action primary" data-action="bj-hit">Взять</button><button class="action secondary" data-action="bj-stand">Остановиться</button><button class="action primary" data-action="bj-double" ${activeHand.cards.length!==2||state.balance<activeHand.stake?'disabled':''}>Double</button><button class="action secondary" data-action="bj-split" ${!canSplit?'disabled':''}>Split</button>`:`<button class="action primary full" data-action="bj-start">РАЗДАТЬ · ${money(stake)} LC</button>`}</div>`;
       }
       if(game==='poker'){
         const g=state.poker,cards=g?g.cards:state.lastPoker||[];
@@ -1084,7 +1149,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
           <div class="plinkoLast">${bank ? `<span>Последний запуск: ${bank.count} шар.</span><strong>${money(bank.win)} LC</strong>` : '<span>Выбери риск и число шариков</span>'}</div>
           <div class="plinkoGroupLabel">УРОВЕНЬ РИСКА</div>
           <div class="plinkoRisks">${[['low','Низкий'],['medium','Средний'],['high','Высокий']].map(([v,label])=>`<button class="${plinkoRisk===v?'on':''}" data-action="plinko-risk" data-value="${v}" ${plinkoRound?'disabled':''}>${label}</button>`).join('')}</div>
-          <div class="plinkoBetGrid"><div><div class="plinkoGroupLabel">СТАВКА НА ШАРИК · LC</div><div class="stakes">${options.map(v=>`<button class="stake ${stake===v?'on':''}" data-action="stake" data-value="${v}" ${plinkoRound?'disabled':''}>${money(v)}</button>`).join('')}</div></div><div><div class="plinkoGroupLabel">ШАРИКИ</div><div class="plinkoCounts">${[1,3,5,10].map(v=>`<button class="${plinkoCount===v?'on':''}" data-action="plinko-count" data-value="${v}" ${plinkoRound?'disabled':''}>${v}</button>`).join('')}</div></div></div>
+          <div class="plinkoBetGrid"><div><div class="plinkoGroupLabel">СТАВКА НА ШАРИК · LC</div><div class="stakes">${options.map(v=>`<button class="stake ${stake===v?'on':''}" data-action="stake" data-value="${v}" ${plinkoRound?'disabled':''}>${money(v)}</button>`).join('')}</div></div><div><div class="plinkoGroupLabel">ШАРИКИ</div><div class="plinkoCounts">${[1,3,5,10,25].map(v=>`<button class="${plinkoCount===v?'on':''}" data-action="plinko-count" data-value="${v}" ${plinkoRound?'disabled':''}>${v}</button>`).join('')}</div></div></div>
           <div class="plinkoSummary"><span>Стоимость запуска</span><strong>${money(stake*plinkoCount)} LC</strong></div>
           <button class="action primary full plinkoLaunch" data-action="play-plinko" ${plinkoRound||state.balance<stake*plinkoCount?'disabled':''}>${plinkoRound?'Шарики в движении…':'Запустить '+plinkoCount+' '+(plinkoCount===1?'шарик':plinkoCount<5?'шарика':'шариков')}</button>
           <div class="tiny plinkoDisclosure">У каждого шарика 12 независимых отскоков влево или вправо. Множитель определяется ячейкой приземления. Только виртуальные LC.</div>
@@ -1121,7 +1186,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
           <div class="crashAutoPanel"><div class="row"><div><strong>Автовывод</strong><small>при достижении заданного множителя</small></div><button class="crashSwitch ${crashAutoEnabled?'on':''}" aria-pressed="${crashAutoEnabled}" data-action="crash-auto" data-value="${crashAutoEnabled?'off':'on'}" ${active?'disabled':''}>${crashAutoEnabled?'ВКЛ':'ВЫКЛ'}</button></div>
           <div class="crashAutoValue"><button data-action="crash-target" data-value="${(crashAutoTarget-.1).toFixed(2)}" ${active||!crashAutoEnabled||crashAutoTarget<=1.1?'disabled':''}>−</button><strong>×${crashAutoTarget.toFixed(2)}</strong><button data-action="crash-target" data-value="${(crashAutoTarget+.1).toFixed(2)}" ${active||!crashAutoEnabled||crashAutoTarget>=100?'disabled':''}>+</button></div>
           <div class="crashPresets">${[1.5,2,2.4,3,5,10].map(x=>`<button data-action="crash-target" data-value="${x}" ${active||!crashAutoEnabled?'disabled':''} class="${crashAutoTarget===x?'active':''}">×${x.toFixed(2)}</button>`).join('')}</div>
-          <div class="crashProjection">При успехе: <strong>${money(Math.floor(stake*crashAutoTarget))} LC</strong></div></div>
+          <div class="crashProjection">При успехе: <strong>${money(Math.floor(stake*crashAutoTarget))} LC</strong></div></div><div class="crashAutoPanel"><div class="row"><div><strong>Автоматическая серия</strong><small>Останавливается при закрытии, смене режима или лимите</small></div><button class="crashSwitch ${crashSeriesEnabled?'on':''}" data-action="crash-series-toggle" data-value="${crashSeriesEnabled?'off':'on'}" ${active?'disabled':''}>${crashSeriesEnabled?'ВКЛ':'ВЫКЛ'}</button></div><div class="crashPresets">${[3,5,10].map(n=>`<button class="${crashSeriesCount===n?'active':''}" data-action="crash-series-count" data-value="${n}" ${active||!crashSeriesEnabled?'disabled':''}>${n} раундов</button>`).join('')}</div><small class="tiny">Стоп-лимиты: проигрыш ${crashStopLoss} LC · выигрыш ${crashTakeProfit} LC</small><div class="crashPresets">${[100,300,500].map(n=>`<button class="${crashStopLoss===n?'active':''}" data-action="crash-loss" data-value="${n}" ${active||!crashSeriesEnabled?'disabled':''}>−${n}</button>`).join('')}</div><div class="crashPresets">${[100,300,500].map(n=>`<button class="${crashTakeProfit===n?'active':''}" data-action="crash-profit" data-value="${n}" ${active||!crashSeriesEnabled?'disabled':''}>+${n}</button>`).join('')}</div><p class="tiny">Не более 10 раундов подряд; серия не продолжается в фоне.</p></div>
           ${active?`<button id="crashCashBtn" class="action primary full" data-action="cash-crash"><span class="crashCashLabel">Забрать · ×${crashDisplay.toFixed(2)}</span></button>`:`<button class="action primary full" data-action="start-crash">${icon('rocket')} Запустить за ${money(stake)} LC</button>`}
           <div class="crashStats"><span>Раунды <b>${stats.rounds}</b></span><span>Выиграны <b>${stats.wins}</b></span><span>Итог <b>${money(stats.paid-stats.spent)} LC</b></span></div>
           <p class="tiny">Автовывод действует только для этой ставки. Если раунд прерывается, результат восстанавливается по времени и сохранённой точке Crash. Не является ставкой на реальные деньги.</p>
@@ -1175,18 +1240,14 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     }
 
     function leaderboardScreen(){
-      const myScore = state.xp + state.spins*22 + Math.floor(state.earned/20);
-      const rows = [...LEADERS, ['Вы', myScore]].sort((a,b)=>b[1]-a[1]);
-      return `
-        <div class="section-title"><h3>Рейтинг города</h3><small>NPC-участники, не реальные игроки</small></div>
-        <div class="leaderboard">
-          ${rows.map(([name,score],idx)=>`
-            <div class="card list-item"><div><strong>${idx+1}. ${name}</strong><small>${name==='Вы' ? 'Ваш локальный профиль' : 'NPC · тестовый соперник'}</small></div><strong class="gold">${money(score)} XP</strong></div>
-          `).join('')}
-        </div>
-      `;
+      const scores=[['plinko','Plinko'],['crash','Crash'],['slots','Slots']];
+      return `<div class="section-title"><h3>Турнир Casino Empire</h3><small>NPC-режим · локально</small></div>
+      <div class="glass"><strong>7-дневные испытания города</strong><p class="tiny">Сравнивай свой прогресс с демонстрационными NPC. Реального сетевого рейтинга нет; наград реальными деньгами нет.</p></div>
+      ${scores.map(([mode,title])=>{const score=(state.modeStats[mode]||0)*20;
+        const bots=[['NPC Neon Fox',240],['NPC Golden Ace',160],['NPC Velvet',80],['Вы',score]].sort((a,b)=>b[1]-a[1]);
+        return `<div class="glass" style="margin:12px 0"><strong>${title} · очки активности</strong>${bots.map(([name,pts],i)=>`<div class="row" style="padding:9px;border-bottom:1px solid #7a568447"><span>${i+1}. ${name}</span><strong class="gold">${pts}</strong></div>`).join('')}</div>`;
+      }).join('')}`;
     }
-
     function clubsScreen(){
       return `
         <div class="section-title"><h3>Клубы</h3><small>локальный демо-раздел</small></div>
@@ -1218,7 +1279,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
           <div class="xp-bar" style="margin-top:16px"><span style="width:${levelProgress()}%"></span></div>
           <div class="subrow"><span>${money(state.xp)} XP</span><span>${Math.floor(levelProgress())}%</span></div>
         </div>
-        <div class="glass lcSeason"><strong>СЕЗОН · КОЛЛЕКЦИЯ КАЗИНО</strong><p class="tiny">Прогресс: ${state.season.xp} XP · косметические награды без преимущества в играх</p><div class="lcSeasonGrid">${[100,300,700,1500].map((need,i)=>`<button data-action="season-claim" data-value="${i}" ${state.season.claimed.includes(i)||state.season.xp<need?'disabled':''}>${['Неоновая эмблема','Золотые карты','Королевский фон','Алмазный титул'][i]}<small>${state.season.claimed.includes(i)?'Получено':need+' XP'}</small></button>`).join('')}</div><p class="tiny">Открыто коллекций: ${state.collectibles.length} · престиж города: ${state.cityPrestige}</p><button class="action secondary" data-action="prestige" ${level()<25?'disabled':''}>Получить знак престижа</button></div><div class="glass lcSettings"><div class="row"><strong>НАСТРОЙКИ</strong><button data-action="setting-sound" class="action secondary">Звук: ${state.settings.sound?'Вкл':'Выкл'}</button><button data-action="setting-motion" class="action secondary">Анимации: ${state.settings.reducedMotion?'Меньше':'Все'}</button></div></div><div class="section-title"><h3>Статистика</h3><small>игровая активность</small></div>
+        <button data-action="nav" data-value="leaderboard" class="action secondary full" style="margin:14px 0">🏆 Турниры и NPC-рейтинг</button><div class="glass lcSeason"><strong>СЕЗОН · КОЛЛЕКЦИЯ КАЗИНО</strong><p class="tiny">Прогресс: ${state.season.xp} XP · косметические награды без преимущества в играх</p><div class="lcSeasonGrid">${[100,300,700,1500].map((need,i)=>`<button data-action="season-claim" data-value="${i}" ${state.season.claimed.includes(i)||state.season.xp<need?'disabled':''}>${['Неоновая эмблема','Золотые карты','Королевский фон','Алмазный титул'][i]}<small>${state.season.claimed.includes(i)?'Получено':need+' XP'}</small></button>`).join('')}</div><p class="tiny">Открыто коллекций: ${state.collectibles.length} · престиж города: ${state.cityPrestige}</p><button class="action secondary" data-action="prestige" ${level()<25?'disabled':''}>Получить знак престижа</button></div><div class="glass lcSettings"><div class="row"><strong>НАСТРОЙКИ</strong><button data-action="setting-sound" class="action secondary">Звук: ${state.settings.sound?'Вкл':'Выкл'}</button><button data-action="setting-motion" class="action secondary">Анимации: ${state.settings.reducedMotion?'Меньше':'Все'}</button></div></div><div class="section-title"><h3>Статистика</h3><small>игровая активность</small></div>
         <div class="stats-grid">
           <div class="card stat"><div class="meta">${icon('history')} Раундов</div><div class="num">${money(state.spins)}</div></div>
           <div class="card stat"><div class="meta">${icon('coin')} Получено</div><div class="num">${money(state.earned)} LC</div></div>
@@ -1268,6 +1329,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
       if(!btn || btn.disabled) return;
+      playUISound('tap');
       const action = btn.dataset.action;
       const value = btn.dataset.value;
       try {
@@ -1285,6 +1347,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         if(action === 'bj-hit') return blackjackHit();
         if(action === 'bj-stand') return blackjackStand();
         if(action === 'bj-double')return blackjackDouble();
+        if(action === 'bj-split')return blackjackSplit();
         if(action === 'poker-start') return pokerStart();
         if(action === 'poker-hold') return pokerHold(Number(value));
         if(action === 'poker-draw') return pokerDraw();
@@ -1300,6 +1363,10 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
         if(action === 'start-mines') return startMines();
         if(action==='mines-count'){if(state.mines)return;const n=Number(value);if([1,3,5,7,10].includes(n)){mineCount=n;return render();}}
         if(action==='crash-auto')return crashSetAuto(value);
+        if(action==='crash-series-toggle')return crashSeriesToggle(value);
+        if(action==='crash-series-count')return crashSeriesSet(value);
+        if(action==='crash-loss')return crashStopSet('loss',value);
+        if(action==='crash-profit')return crashStopSet('profit',value);
         if(action==='crash-target')return crashSetTarget(value);
         if(action === 'reveal') return revealCell(Number(value));
         if(action === 'cash-mines') return cashMines();
@@ -1327,7 +1394,7 @@ html,body{background:radial-gradient(ellipse at 50% -15%,#442151 0%,#100b1b 50%,
     if(state.crash)crashTicker=requestAnimationFrame(crashStep);
     try{ysdk?.features?.LoadingAPI?.ready();}catch(e){console.warn('LoadingAPI failed',e)}
     document.addEventListener('visibilitychange',()=>{
-      if(document.hidden){gameplayActive(false);if(sdkPlayer?.setData)sdkPlayer.setData({luckyCityV1:state},true).catch(()=>{})}
+      if(document.hidden){crashSeriesRemaining=0;gameplayActive(false);if(sdkPlayer?.setData)sdkPlayer.setData({luckyCityV1:state},true).catch(()=>{})}
       else if(screen==='mode')gameplayActive(true);
     });
   })();
