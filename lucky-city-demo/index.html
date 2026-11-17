@@ -243,7 +243,7 @@ var MODES=[['plinko','🔮','PLINKO','Удача на каждом шагу'],['
 var DIST=[['🌃','Neon Street',1],['🎡','Fortune Square',5],['🏙️','Golden District',12],['👑','Royal Heights',25]];
 var qs=[['play3','Сыграть 3 раунда',3],['play8','Сыграть 8 раундов',8],['different2','Сыграть в двух режимах',2]];
 var state,screen='city',mode='plinko',stake=50,lastResult='',ball=false,toast='',lost=[],tab='season',spinning=false,plinkoSlot=-1,plinkoPath=[],wheelSlot=-1,wheelTurn=0,wheelReveal=false,roundsWon=0,crashBurstUntil=0;
-function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,streak:0,streakBest:0,modeStats:{},history:[],quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,club:null}}
+function fresh(){return {balance:3000,xp:0,spins:0,earned:0,daily:null,wheel:null,streak:0,streakBest:0,modeStats:{},history:[],buildings:{},districtPayoutDay:null,quests:{date:day(),rounds:0,modes:[],claimed:[]},ach:[],mines:null,crash:null,club:null}}
 try{state=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){state=fresh()}
 if(!state||typeof state!=='object'||!Number.isSafeInteger(state.balance)||state.balance<0||state.balance>1000000000)state=fresh();
 state.streak=Number.isSafeInteger(state.streak)&&state.streak>=0?state.streak:0;
@@ -251,6 +251,9 @@ state.streakBest=Number.isSafeInteger(state.streakBest)&&state.streakBest>=0?sta
 if(!state.modeStats||typeof state.modeStats!=='object'||Array.isArray(state.modeStats))state.modeStats={};
 if(!Array.isArray(state.ach))state.ach=[];
 if(!Array.isArray(state.history))state.history=[];
+if(!state.buildings||typeof state.buildings!=='object'||Array.isArray(state.buildings))state.buildings={};
+for(const key of ['neon','fortune','golden','royal']){const n=state.buildings[key];state.buildings[key]=Number.isSafeInteger(n)&&n>=0&&n<=5?n:0;}
+if(typeof state.districtPayoutDay!=='string')state.districtPayoutDay=null;
 if(!state.quests||!Array.isArray(state.quests.claimed)||!Array.isArray(state.quests.modes))state.quests={date:day(),rounds:0,modes:[],claimed:[]};
 function day(){return new Date().toISOString().slice(0,10)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
@@ -269,10 +272,58 @@ function wheelAngle(slot){return (2160-(slot*60+30))+'deg'}
 function choose(list){var total=0;list.forEach(function(a){total+=a[1]});var r=Math.random()*total;for(var i=0;i<list.length;i++){r-=list[i][1];if(r<0)return list[i][0]}return list[list.length-1][0]}
 function crashMult(){return Math.min(100,Math.max(1,Math.floor((1+(Date.now()-state.crash.start)/3000)*100)/100))}
 function settle(){if(state.crash&&crashMult()>=state.crash.point){lastResult='💥 CRASH ×'+state.crash.point;state.crash=null;crashBurstUntil=Date.now()+900;round('crash');save();return true}return false}
+
+/**
+ * Browser-only city economy. No real currency or passive timers.
+ * Four explicitly gated districts, five upgrade levels per building.
+ * The combined district dividend can only be claimed once per UTC date.
+ */
+var BUILDINGS=[
+ {id:'neon',name:'Neon Street',need:1,base:300,income:40,icon:'city',description:'Стартовая торговая галерея и яркие витрины'},
+ {id:'fortune',name:'Fortune Square',need:5,base:650,income:90,icon:'wheel',description:'Деловой квартал с центральной площадью'},
+ {id:'golden',name:'Golden District',need:12,base:1400,income:180,icon:'skyline',description:'Премиальные башни и офисные пространства'},
+ {id:'royal',name:'Royal Heights',need:25,base:2800,income:300,icon:'crown',description:'Эксклюзивная вершина ночного города'}
+];
+function building(id){return BUILDINGS.find(function(b){return b.id===id})}
+function buildingLevel(id){return state.buildings[id]||0}
+function buildingPrice(b){return Math.floor(b.base*Math.pow(1.65,buildingLevel(b.id)))}
+function dailyCityIncome(){return BUILDINGS.reduce(function(sum,b){return sum+buildingLevel(b.id)*b.income},0)}
+function buyBuilding(id){
+ var b=building(id);if(!b)throw Error('Здание не найдено');
+ if(lvl()<b.need)throw Error('Район открывается на уровне '+b.need);
+ if(buildingLevel(id)>=5)throw Error('Здание максимально улучшено');
+ var price=buildingPrice(b);
+ change(-price,'Улучшение · '+b.name);
+ state.buildings[id]=buildingLevel(id)+1;
+ save();snack('Улучшение '+b.name+' · уровень '+buildingLevel(id));
+}
+function claimCityIncome(){
+ if(state.districtPayoutDay===day())throw Error('Доход города уже получен сегодня');
+ var amount=dailyCityIncome();
+ if(amount<=0)throw Error('Сначала улучши хотя бы одно здание');
+ change(amount,'Доход районов');
+ state.districtPayoutDay=day();
+ save();snack('Доход города: +'+money(amount)+' LC');
+}
+function district(){
+ var current=dailyCityIncome(),done=state.districtPayoutDay===day();
+ var html=button('‹ Назад в город','back','','back');
+ html+='<section class="panel cityEmpireHero"><span class="subtitle">ГОРОДСКАЯ ИМПЕРИЯ</span><h2>Твой город. Твои здания.</h2><p class="muted">Развивай кварталы и собирай виртуальный доход один раз в день. Без автоматических начислений и платежей.</p><div class="cityEmpireStats"><div><small>Здания</small><strong>'+BUILDINGS.filter(function(b){return buildingLevel(b.id)>0}).length+' / 4</strong></div><div><small>Доход в день</small><strong>'+money(current)+' LC</strong></div></div>'+button(done?'Доход за сегодня получен':'Забрать '+money(current)+' LC','city-income','','primary',done||current===0)+'</section>';
+ html+=heading('Улучшение кварталов','Максимум 5 уровней');
+ BUILDINGS.forEach(function(b){
+  var level=buildingLevel(b.id),locked=lvl()<b.need,full=level>=5,price=full?0:buildingPrice(b);
+  html+='<div class="panel empireBuilding '+(locked?'locked':'')+'"><div class="buildingVisual building-'+b.id+'"><span class="buildingSheen"></span><div class="tower-group"><i></i><i></i><i></i></div><div class="buildingNumber">0'+BUILDINGS.indexOf(b)+'</div></div><div class="buildingContent"><div class="panel-row"><strong>'+b.name+'</strong><small>'+(locked?'Уровень игрока '+b.need:level+' / 5')+'</small></div><p class="muted">'+b.description+'</p><div class="levelProgress"><span style="width:'+(level*20)+'%"></span></div><div class="buildingReturn"><span>Доход: '+money(level*b.income)+' LC/день</span><span>След. +'+b.income+' LC</span></div>'+button(locked?'Закрыто до уровня '+b.need:full?'Максимальный уровень':'Улучшить за '+money(price)+' LC','building-upgrade',b.id,'primary',locked||full||state.balance<price)+'</div></div>';
+ });
+ html+='<p class="muted">Награды начисляются только при нажатии «Забрать» и не накапливаются за пропущенные дни. Экономика демоверсии сохраняется на этом устройстве.</p>';return html;
+}
+
 function act(type,value){try{
  if(type==='nav'){screen=value;lastResult='';lost=[]}
  if(type==='mode'){screen='mode';mode=value;lastResult='';lost=[]}
  if(type==='back'){screen='city';lastResult=''}
+ if(type==='district'){screen='district';lastResult=''}
+ if(type==='building-upgrade')buyBuilding(value);
+ if(type==='city-income')claimCityIncome();
  if(type==='stake')stake=Number(value);
  if(type==='reset'){if(confirm('Сбросить все тестовые монеты и прогресс?')){state=fresh();screen='city';lastResult='';lost=[];plinkoSlot=-1;wheelSlot=-1}}
  if(type==='daily'){if(state.daily===day())throw Error('Подарок уже получен');var gift=dailyReward();state.streak=consecutiveDaily();state.streakBest=Math.max(state.streakBest,state.streak);change(gift,'Подарок · день '+state.streak);state.daily=day();snack('🔥 Серия '+state.streak+' дн. · +'+gift+' LC')}
@@ -297,6 +348,7 @@ function city(){var html='<section class="hero deluxe"><div class="eyebrow">✦ 
  html+=heading('Игровые залы','4 уникальных режима')+'<div class="grid">'+cards()+'</div>';
  html+=heading('Районы города','Уровень '+lvl())+'<div class="grid">';
  DIST.forEach(function(d){var open=lvl()>=d[2];html+='<div class="panel district '+(open?'':'locked')+'"><i>'+(open?d[0]:'🔒')+'</i><div><strong>'+d[1]+'</strong><small>'+(open?'Доступен':'Открывается на ур. '+d[2])+'</small></div></div>'});html+='</div>';
+ html+='<div class="panel empireTeaser"><div class="panel-row"><div><span class="subtitle">НОВАЯ МЕХАНИКА</span><h3>Управление городом</h3><p class="muted">Улучшай здания и получай доход за развитие районов.</p></div><span class="empireIcon">♜</span></div><div class="panel-row"><small>Доступный доход: '+money(dailyCityIncome())+' LC/день</small>'+button('Открыть здания','district','','primary')+'</div></div>';
  var within=state.xp%250;html+='<div class="panel"><div class="panel-row"><strong>⭐ Прогресс уровня</strong><small>'+within+' / 250 XP</small></div><div class="levelProgress"><span style="width:'+(within/250*100)+'%"></span></div></div>';
  html+=heading('Сезонные достижения',state.xp+' XP')+'<div class="badges"><div><span>'+(state.xp>=50?'🥉':'🔒')+'</span>Бронза · 50 XP</div><div><span>'+(state.xp>=250?'🥈':'🔒')+'</span>Серебро · 250 XP</div><div><span>'+(state.xp>=750?'🥇':'🔒')+'</span>Золото · 750 XP</div></div>';
  html+='<div class="panel streakPanel"><div class="panel-row"><div><span class="subtitle">🔥 СЕРИЯ ВХОДОВ</span><strong class="streakTitle">'+(state.daily===day()?state.streak:consecutiveDaily()-1)+' дней подряд</strong><small>Максимум: '+state.streakBest+' дней · До 800 LC в день</small></div><span class="streakFire">🔥</span></div><div class="streakDays">'+Array.from({length:7},function(_,i){return '<span class="'+(i<Math.min(7,state.daily===day()?state.streak:consecutiveDaily()-1)?'claimed':'')+'">'+(i+1)+'</span>'}).join('')+'</div><div class="panel-row" style="margin-top:14px"><div><strong>🎁 Ежедневный подарок</strong><small>'+(state.daily===day()?'Сегодня уже получен':'Награда: '+dailyReward()+' LC')+'</small></div>'+button(state.daily===day()?'Получено':'+'+dailyReward()+' LC','daily','','',state.daily===day())+'</div></div>';return html}
@@ -370,7 +422,7 @@ function replaceEmojiWithIcons(html){
 function render(){var app=document.getElementById('app');if(!app)return;var h='<div class="demo"><div><strong>🎮 LUCKY CITY DELUXE 1.1</strong><small>Только виртуальные монеты · без регистрации</small></div>'+button('Сбросить','reset','','ghost')+'</div>';
  h+='<header class="top"><div><div class="brand">✦ LUCKY <span>CITY</span></div><div class="sub">ГОРОД ТВОЕЙ УДАЧИ</div></div>'+button('👑','nav','profile','avatar')+'</header>';
  h+='<div class="wallet"><div><small>💰 LUCKY COINS</small><strong>'+money(state.balance)+' <em>LC</em></strong></div><div class="lvl"><small>⭐ РЕПУТАЦИЯ</small><strong>Ур. '+lvl()+'</strong></div></div>';
- h+=screen==='city'?city():screen==='mode'?modes():screen==='quests'?quest():screen==='rating'?rating():screen==='clubs'?clubs():profile();
+ h+=screen==='city'?city():screen==='district'?district():screen==='mode'?modes():screen==='quests'?quest():screen==='rating'?rating():screen==='clubs'?clubs():profile();
  h+='<footer>ПРЕДПРОСМОТР · без сервера, платежей и реальных призов</footer><div class="nav">'+[['city','🏙️','Город'],['quests','🎁','Награды'],['rating','🏆','Рейтинг'],['clubs','🏰','Клубы'],['profile','👤','Профиль']].map(function(x){return button('<span>'+x[1]+'</span><small>'+x[2]+'</small>','nav',x[0],screen===x[0]?'active':'')}).join('')+'</div>';
  if(toast)h+='<div class="toast">'+escapeText(toast)+'</div>';app.innerHTML=replaceEmojiWithIcons(h)}
 document.addEventListener('click',function(e){var b=e.target.closest('button[data-action]');if(b&&!b.disabled)act(b.dataset.action,b.dataset.value)});
