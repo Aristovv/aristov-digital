@@ -282,12 +282,52 @@ function profile(){var level=lvl(),within=state.xp%250,rank=level>=25?'👑 ЛЕ
  h+=heading('Статистика игровых режимов','Раунды')+'<div class="modeStats">'+MODES.map(function(m){return '<div><span>'+m[1]+'</span><strong>'+money(state.modeStats[m[0]]||0)+'</strong><small>'+m[2]+'</small></div>'}).join('')+'</div>';
  h+='<div class="panel panel-row"><div><strong>🔥 Рекорд серии входов</strong><small>Ежедневные подарки</small></div><strong>'+state.streakBest+' дн.</strong></div>';
  h+=heading('История операций','Только локальные LC');h+=state.history.length?state.history.map(function(x){return '<div class="panel panel-row"><small>'+escapeText(x.type)+'</small><strong style="color:'+(x.delta>0?'#9eeac9':'#eec6d5')+'">'+(x.delta>0?'+':'')+x.delta+' LC</strong></div>'}).join(''):'<div class="panel">История пока пуста</div>';return h}
+
+/* Premium vector icon layer: visual emoji replaced without changing game data. */
+const ICON_PATHS={
+  city:'<path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6M8 11h.01M12 11h.01M16 11h.01"/>',
+  dice:'<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8" cy="8" r="1"/><circle cx="16" cy="8" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/>',
+  diamond:'<path d="m3 9 5-6h8l5 6-9 12L3 9ZM3 9h18M8 3l4 18 4-18"/>',
+  rocket:'<path d="M14 4c3.4.8 5.2 3 6 6l-7 7-6-6 7-7ZM7 11l-4 2 2-5M13 17l-2 4 5-2M5 19l-2 2M8 19l-2 3"/><circle cx="15" cy="9" r="1.3"/>',
+  wheel:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7M5.6 5.6l5 5m2.8 2.8 5 5M18.4 5.6l-5 5m-2.8 2.8-5 5"/>',
+  skyline:'<path d="M2 21h20M4 21V9h5v12M10 21V4h6v17M17 21v-9h4v9M6 12h1M6 15h1M12 7h2M12 10h2M12 13h2"/>',
+  crown:'<path d="m3 8 5 4 4-7 4 7 5-4-2 11H5L3 8ZM5 19h14"/>',
+  explosion:'<path d="m12 2 2 7 7-3-4 6 5 5-8-1-2 6-3-7-7 1 5-5-3-6 7 3 1-6Z"/>',
+  flame:'<path d="M12 2s4 4 4 8c0 2-1 3-1 3s5-1 5-6c2 4 2 7 0 10a9 9 0 0 1-16-6c0-3 2-6 5-8 0 4 1 5 3 6-1-3 0-5 0-7Z"/>',
+  sparkle:'<path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3L12 2Z"/>',
+  gift:'<rect x="3" y="10" width="18" height="11" rx="2"/><path d="M2 7h20v4H2ZM12 7v14M12 7C7 7 6 1 9 2c2 0 3 3 3 5ZM12 7c5 0 6-6 3-5-2 0-3 3-3 5Z"/>',
+  star:'<path d="m12 2 3.1 6.4 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3 1.2-6.8-5-4.9 6.9-1L12 2Z"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3M12 15v2"/>',
+  medal:'<circle cx="12" cy="16" r="5"/><path d="m8 12-3-9h5l2 5 2-5h5l-3 9M12 13v6"/>',
+  mine:'<circle cx="12" cy="12" r="5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5m-17-7 4 4m6 6 4 4M19 5l-4 4m-6 6-4 4"/>',
+  coin:'<ellipse cx="12" cy="7" rx="8" ry="4"/><path d="M4 7v10c0 2.2 3.6 4 8 4s8-1.8 8-4V7M4 12c0 2.2 3.6 4 8 4s8-1.8 8-4"/>',
+  trophy:'<path d="M8 21h8m-4-5v5M7 4h10v6a5 5 0 0 1-10 0V4ZM17 5h3v2a4 4 0 0 1-4 4M7 5H4v2a4 4 0 0 0 4 4"/>',
+  check:'<path d="m4 12 5 5L20 6"/>',
+  club:'<path d="M12 2 3 7v10l9 5 9-5V7l-9-5ZM7 9l5 3 5-3M12 12v6"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M2 21v-2a7 7 0 0 1 14 0v2M16 5a3 3 0 0 1 0 6M18 14a6 6 0 0 1 4 6"/>',
+  gamepad:'<path d="M7 7h10c2.8 0 3.4 2.2 4 7 .5 3.8-1 5-3.5 3L15 15H9l-2.5 2C4 19 2.5 17.8 3 14c.6-4.8 1.2-7 4-7ZM7 11v4m-2-2h4M16 12h.01M18 14h.01"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3.6-8 8-8s8 3 8 8"/>',
+  arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>'
+};
+const EMOJI_ICONS={
+  '🔮':'dice','💎':'diamond','🚀':'rocket','🎡':'wheel',
+  '🌃':'skyline','🏙️':'city','🏙':'city','👑':'crown','💥':'explosion',
+  '🔥':'flame','🎉':'sparkle','🎁':'gift','⭐':'star','↗':'arrow',
+  '🔒':'lock','🥉':'medal','🥈':'medal','🥇':'medal','💣':'mine',
+  '💰':'coin','🏆':'trophy','✅':'check','🏰':'club','👥':'users',
+  '🎮':'gamepad','🏅':'medal','👤':'user'
+};
+const EMOJI_RE=/🏙️|🔮|💎|🚀|🎡|🌃|🏙|👑|💥|🔥|🎉|🎁|⭐|↗|🔒|🥉|🥈|🥇|💣|💰|🏆|✅|🏰|👥|🎮|🏅|👤/gu;
+function replaceEmojiWithIcons(html){
+ return html.replace(EMOJI_RE,(emoji)=>'<span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24">'+ICON_PATHS[EMOJI_ICONS[emoji]]+'</svg></span>');
+}
+
 function render(){var app=document.getElementById('app');if(!app)return;var h='<div class="demo"><div><strong>🎮 LUCKY CITY DELUXE 1.1</strong><small>Только виртуальные монеты · без регистрации</small></div>'+button('Сбросить','reset','','ghost')+'</div>';
  h+='<header class="top"><div><div class="brand">✦ LUCKY <span>CITY</span></div><div class="sub">ГОРОД ТВОЕЙ УДАЧИ</div></div>'+button('👑','nav','profile','avatar')+'</header>';
  h+='<div class="wallet"><div><small>💰 LUCKY COINS</small><strong>'+money(state.balance)+' <em>LC</em></strong></div><div class="lvl"><small>⭐ РЕПУТАЦИЯ</small><strong>Ур. '+lvl()+'</strong></div></div>';
  h+=screen==='city'?city():screen==='mode'?modes():screen==='quests'?quest():screen==='rating'?rating():screen==='clubs'?clubs():profile();
  h+='<footer>ПРЕДПРОСМОТР · без сервера, платежей и реальных призов</footer><div class="nav">'+[['city','🏙️','Город'],['quests','🎁','Награды'],['rating','🏆','Рейтинг'],['clubs','🏰','Клубы'],['profile','👤','Профиль']].map(function(x){return button('<span>'+x[1]+'</span><small>'+x[2]+'</small>','nav',x[0],screen===x[0]?'active':'')}).join('')+'</div>';
- if(toast)h+='<div class="toast">'+escapeText(toast)+'</div>';app.innerHTML=h}
+ if(toast)h+='<div class="toast">'+escapeText(toast)+'</div>';app.innerHTML=replaceEmojiWithIcons(h)}
 document.addEventListener('click',function(e){var b=e.target.closest('button[data-action]');if(b&&!b.disabled)act(b.dataset.action,b.dataset.value)});
 function animateCrashGraph(){
  if(!state.crash)return;
